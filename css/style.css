@@ -635,12 +635,16 @@ body {
 .left-puller {
   left: 4px;
 }
+.left-puller .puller-char-wrap {
+  transform: scaleX(-1);
+}
+
 .right-puller {
   right: 4px;
   --puller-color: var(--red);
 }
 .right-puller .puller-char-wrap {
-  transform: scaleX(-1);
+  transform: scaleX(1);
 }
 
 /* Comic Speech Bubble on Strain / Pull */
@@ -758,45 +762,46 @@ body {
   animation: tug-lean-right 1.4s ease-in-out infinite alternate;
 }
 @keyframes tug-lean-left {
-  0%   { transform: rotate(0deg) translateY(0); }
-  100% { transform: rotate(-4deg) translateY(-1px); }
+  0%   { transform: scaleX(-1) rotate(0deg) translateY(0); }
+  100% { transform: scaleX(-1) rotate(4deg) translateY(-1px); }
 }
 @keyframes tug-lean-right {
-  0%   { transform: scaleX(-1) rotate(0deg) translateY(0); }
-  100% { transform: scaleX(-1) rotate(-4deg) translateY(-1px); }
+  0%   { transform: scaleX(1) rotate(0deg) translateY(0); }
+  100% { transform: scaleX(1) rotate(-4deg) translateY(-1px); }
 }
 
 /* 2. PULLING HARD (When winning / pulling) */
-.tug-puller.pulling-hard .puller-char-wrap {
-  animation: pull-heave 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+.left-puller.pulling-hard .puller-char-wrap {
+  animation: pull-heave-left 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
   filter: drop-shadow(0 0 10px var(--puller-color));
 }
 .right-puller.pulling-hard .puller-char-wrap {
-  animation: pull-heave-flip 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+  animation: pull-heave-right 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+  filter: drop-shadow(0 0 10px var(--puller-color));
 }
-@keyframes pull-heave {
-  0%, 100% { transform: rotate(-5deg) translateX(0); }
-  50%      { transform: rotate(-14deg) translateX(-6px); }
+@keyframes pull-heave-left {
+  0%, 100% { transform: scaleX(-1) rotate(4deg) translateX(0); }
+  50%      { transform: scaleX(-1) rotate(14deg) translateX(6px); }
 }
-@keyframes pull-heave-flip {
-  0%, 100% { transform: scaleX(-1) rotate(-5deg) translateX(0); }
-  50%      { transform: scaleX(-1) rotate(-14deg) translateX(-6px); }
+@keyframes pull-heave-right {
+  0%, 100% { transform: scaleX(1) rotate(-4deg) translateX(0); }
+  50%      { transform: scaleX(1) rotate(-14deg) translateX(-6px); }
 }
 
 /* 3. BEING DRAGGED (When losing ground / slipping towards center) */
-.tug-puller.being-dragged .puller-char-wrap {
-  animation: dragged-slip 0.4s ease-in-out infinite alternate !important;
+.left-puller.being-dragged .puller-char-wrap {
+  animation: dragged-slip-left 0.4s ease-in-out infinite alternate !important;
 }
 .right-puller.being-dragged .puller-char-wrap {
-  animation: dragged-slip-flip 0.4s ease-in-out infinite alternate !important;
+  animation: dragged-slip-right 0.4s ease-in-out infinite alternate !important;
 }
-@keyframes dragged-slip {
-  0%   { transform: rotate(6deg) translateY(0); }
-  100% { transform: rotate(14deg) translateY(3px) translateX(4px); }
+@keyframes dragged-slip-left {
+  0%   { transform: scaleX(-1) rotate(-4deg) translateY(0); }
+  100% { transform: scaleX(-1) rotate(-12deg) translateY(2px) translateX(-4px); }
 }
-@keyframes dragged-slip-flip {
-  0%   { transform: scaleX(-1) rotate(6deg) translateY(0); }
-  100% { transform: scaleX(-1) rotate(14deg) translateY(3px) translateX(4px); }
+@keyframes dragged-slip-right {
+  0%   { transform: scaleX(1) rotate(4deg) translateY(0); }
+  100% { transform: scaleX(1) rotate(12deg) translateY(2px) translateX(4px); }
 }
 
 .tug-puller.being-dragged .puller-sweat {
@@ -820,35 +825,35 @@ body {
 }
 
 /* 4. DRAGGED LOSS (Lost match - fell into center mud pit) */
-.tug-puller.dragged-loss .puller-char-wrap {
-  animation: fallen-slip 0.8s forwards !important;
+.left-puller.dragged-loss .puller-char-wrap {
+  animation: fallen-slip-left 0.8s forwards !important;
 }
 .right-puller.dragged-loss .puller-char-wrap {
-  animation: fallen-slip-flip 0.8s forwards !important;
+  animation: fallen-slip-right 0.8s forwards !important;
 }
-@keyframes fallen-slip {
-  0%   { transform: rotate(0); }
-  100% { transform: rotate(60deg) translateY(14px) translateX(18px); filter: grayscale(0.5); }
-}
-@keyframes fallen-slip-flip {
+@keyframes fallen-slip-left {
   0%   { transform: scaleX(-1) rotate(0); }
-  100% { transform: scaleX(-1) rotate(60deg) translateY(14px) translateX(18px); filter: grayscale(0.5); }
+  100% { transform: scaleX(-1) rotate(-50deg) translateY(14px) translateX(-18px); filter: grayscale(0.5); }
+}
+@keyframes fallen-slip-right {
+  0%   { transform: scaleX(1) rotate(0); }
+  100% { transform: scaleX(1) rotate(50deg) translateY(14px) translateX(18px); filter: grayscale(0.5); }
 }
 
 /* 5. VICTORIOUS (Won the match) */
-.tug-puller.victorious .puller-char-wrap {
-  animation: victory-bounce 0.6s ease-in-out infinite alternate !important;
+.left-puller.victorious .puller-char-wrap {
+  animation: victory-bounce-left 0.6s ease-in-out infinite alternate !important;
 }
 .right-puller.victorious .puller-char-wrap {
-  animation: victory-bounce-flip 0.6s ease-in-out infinite alternate !important;
+  animation: victory-bounce-right 0.6s ease-in-out infinite alternate !important;
 }
-@keyframes victory-bounce {
-  0%   { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-16px) scale(1.15); filter: drop-shadow(0 0 12px var(--gold)); }
-}
-@keyframes victory-bounce-flip {
+@keyframes victory-bounce-left {
   0%   { transform: scaleX(-1) translateY(0) scale(1); }
   100% { transform: scaleX(-1) translateY(-16px) scale(1.15); filter: drop-shadow(0 0 12px var(--gold)); }
+}
+@keyframes victory-bounce-right {
+  0%   { transform: scaleX(1) translateY(0) scale(1); }
+  100% { transform: scaleX(1) translateY(-16px) scale(1.15); filter: drop-shadow(0 0 12px var(--gold)); }
 }
 
 /* ---- Keypad (shared) ---- */
