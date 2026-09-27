@@ -9,7 +9,7 @@
   <link rel="alternate icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=1.0.5" />
 </head>
 <body>
 
@@ -392,15 +392,73 @@
         <span id="local-center-t2">0</span>
       </div>
 
-      <!-- Rope area -->
-      <div class="rope-area">
-        <div class="rope-track">
-          <div class="rope-line"></div>
-          <div class="rope-marker" id="rope-marker">🚩</div>
+      <!-- Real Tug of War Arena -->
+      <div class="tug-arena" id="local-tug-arena">
+        <!-- Pitch ground with hazard center pit -->
+        <div class="tug-pitch">
+          <div class="pitch-marker mark-left"></div>
+          <div class="pitch-center-pit">
+            <span class="pit-line"></span>
+            <span class="pit-hazard">⚡</span>
+          </div>
+          <div class="pitch-marker mark-right"></div>
         </div>
-        <div class="rope-chars">
-          <div class="char-pull-left">🧑</div>
-          <div class="char-pull-right">🧑</div>
+
+        <!-- The Rope and Flag Track -->
+        <div class="tug-rope-track">
+          <div class="tug-rope-line">
+            <div class="rope-marker" id="local-rope-marker">
+              <span class="flag-icon">🚩</span>
+              <span class="knot-ribbon"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Pulling & Dragging Characters -->
+        <div class="tug-characters">
+          <!-- Left Puller -->
+          <div class="tug-puller left-puller" id="local-puller-left">
+            <div class="puller-shout" id="local-shout-left"></div>
+            <div class="puller-char-wrap">
+              <div class="puller-avatar" id="local-avatar-left"></div>
+              <div class="puller-sweat">💦</div>
+              <svg class="puller-svg" viewBox="0 0 54 64">
+                <path class="arm arm-back" d="M22 22 L36 28" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="36" cy="28" r="3.5" fill="#f59e0b"/>
+                <path class="torso" d="M26 14 L16 36" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                <path class="leg leg-back" d="M16 36 L6 56" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="4" cy="57" rx="5" ry="3" fill="#0f172a"/>
+                <path class="leg leg-front" d="M16 36 L28 54" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="30" cy="55" rx="5" ry="3" fill="#0f172a"/>
+                <path class="arm arm-front" d="M20 25 L42 30" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="42" cy="30" r="3.5" fill="#f59e0b"/>
+              </svg>
+              <div class="puller-dust"></div>
+            </div>
+            <span class="puller-name" id="local-puller-name-left">Team 1</span>
+          </div>
+
+          <!-- Right Puller -->
+          <div class="tug-puller right-puller" id="local-puller-right">
+            <div class="puller-shout" id="local-shout-right"></div>
+            <div class="puller-char-wrap">
+              <div class="puller-avatar" id="local-avatar-right"></div>
+              <div class="puller-sweat">💦</div>
+              <svg class="puller-svg" viewBox="0 0 54 64">
+                <path class="arm arm-back" d="M22 22 L36 28" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="36" cy="28" r="3.5" fill="#f59e0b"/>
+                <path class="torso" d="M26 14 L16 36" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                <path class="leg leg-back" d="M16 36 L6 56" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="4" cy="57" rx="5" ry="3" fill="#0f172a"/>
+                <path class="leg leg-front" d="M16 36 L28 54" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                <ellipse cx="30" cy="55" rx="5" ry="3" fill="#0f172a"/>
+                <path class="arm arm-front" d="M20 25 L42 30" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="42" cy="30" r="3.5" fill="#f59e0b"/>
+              </svg>
+              <div class="puller-dust"></div>
+            </div>
+            <span class="puller-name" id="local-puller-name-right">Team 2</span>
+          </div>
         </div>
       </div>
     </div>
@@ -450,15 +508,73 @@
       </div>
     </div>
 
-    <!-- Rope -->
-    <div class="online-rope-area">
-      <div class="rope-track">
-        <div class="rope-line"></div>
-        <div class="rope-marker" id="rope-marker">🚩</div>
+    <!-- Real Tug of War Arena (Online) -->
+    <div class="tug-arena online-tug-arena" id="online-tug-arena">
+      <!-- Pitch ground with hazard center pit -->
+      <div class="tug-pitch">
+        <div class="pitch-marker mark-left"></div>
+        <div class="pitch-center-pit">
+          <span class="pit-line"></span>
+          <span class="pit-hazard">⚡</span>
+        </div>
+        <div class="pitch-marker mark-right"></div>
       </div>
-      <div class="rope-chars">
-        <div class="char-pull-left">🧑</div>
-        <div class="char-pull-right">🧑</div>
+
+      <!-- The Rope and Flag Track -->
+      <div class="tug-rope-track">
+        <div class="tug-rope-line">
+          <div class="rope-marker" id="online-rope-marker">
+            <span class="flag-icon">🚩</span>
+            <span class="knot-ribbon"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Pulling & Dragging Characters -->
+      <div class="tug-characters">
+        <!-- Left Puller (You) -->
+        <div class="tug-puller left-puller" id="online-puller-left">
+          <div class="puller-shout" id="online-shout-left"></div>
+          <div class="puller-char-wrap">
+            <div class="puller-avatar" id="online-avatar-left"></div>
+            <div class="puller-sweat">💦</div>
+            <svg class="puller-svg" viewBox="0 0 54 64">
+              <path class="arm arm-back" d="M22 22 L36 28" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="36" cy="28" r="3.5" fill="#f59e0b"/>
+              <path class="torso" d="M26 14 L16 36" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+              <path class="leg leg-back" d="M16 36 L6 56" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+              <ellipse cx="4" cy="57" rx="5" ry="3" fill="#0f172a"/>
+              <path class="leg leg-front" d="M16 36 L28 54" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+              <ellipse cx="30" cy="55" rx="5" ry="3" fill="#0f172a"/>
+              <path class="arm arm-front" d="M20 25 L42 30" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="42" cy="30" r="3.5" fill="#f59e0b"/>
+            </svg>
+            <div class="puller-dust"></div>
+          </div>
+          <span class="puller-name" id="online-puller-name-left">You</span>
+        </div>
+
+        <!-- Right Puller (Opponent) -->
+        <div class="tug-puller right-puller" id="online-puller-right">
+          <div class="puller-shout" id="online-shout-right"></div>
+          <div class="puller-char-wrap">
+            <div class="puller-avatar" id="online-avatar-right"></div>
+            <div class="puller-sweat">💦</div>
+            <svg class="puller-svg" viewBox="0 0 54 64">
+              <path class="arm arm-back" d="M22 22 L36 28" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="36" cy="28" r="3.5" fill="#f59e0b"/>
+              <path class="torso" d="M26 14 L16 36" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+              <path class="leg leg-back" d="M16 36 L6 56" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+              <ellipse cx="4" cy="57" rx="5" ry="3" fill="#0f172a"/>
+              <path class="leg leg-front" d="M16 36 L28 54" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+              <ellipse cx="30" cy="55" rx="5" ry="3" fill="#0f172a"/>
+              <path class="arm arm-front" d="M20 25 L42 30" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="42" cy="30" r="3.5" fill="#f59e0b"/>
+            </svg>
+            <div class="puller-dust"></div>
+          </div>
+          <span class="puller-name" id="online-puller-name-right">Opponent</span>
+        </div>
       </div>
     </div>
 
@@ -556,12 +672,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <!-- App scripts -->
-<script src="js/config.js?v=1.0.4"></script>
-<script src="js/questions.js?v=1.0.4"></script>
-<script src="js/app.js?v=1.0.4"></script>
-<script src="js/auth.js?v=1.0.4"></script>
-<script src="js/lobby.js?v=1.0.4"></script>
-<script src="js/game.js?v=1.0.4"></script>
+<script src="js/config.js?v=1.0.5"></script>
+<script src="js/questions.js?v=1.0.5"></script>
+<script src="js/app.js?v=1.0.5"></script>
+<script src="js/auth.js?v=1.0.5"></script>
+<script src="js/lobby.js?v=1.0.5"></script>
+<script src="js/game.js?v=1.0.5"></script>
 
 <script>
 // ======================== GLOBAL UI HANDLERS ========================

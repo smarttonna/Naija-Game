@@ -447,45 +447,394 @@ body {
   100% { transform: scale(1);   opacity: 1; }
 }
 
-/* ---- ROPE AREA (shared) ---- */
-.rope-area, .online-rope-area {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 1rem 0; gap: .8rem;
+/* ============================================
+   TUG OF WAR ARENA & DRAGGING RIG
+   ============================================ */
+.tug-arena {
+  position: relative;
+  width: 100%;
+  height: 155px;
+  background: radial-gradient(ellipse at 50% 120%, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  user-select: none;
 }
-.rope-track {
-  position: relative; width: 100%; height: 20px;
-  display: flex; align-items: center;
+
+.online-tug-arena {
+  height: 165px;
+  margin: 0.2rem 0;
 }
-.rope-line {
-  width: 100%; height: 8px;
-  background: linear-gradient(90deg, #8B6914, #d4a017, #8B6914);
-  border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.5);
+
+/* Ground Pitch & Hazard Center Line */
+.tug-pitch {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
 }
-.rope-marker {
-  position: absolute; top: 50%; transform: translate(-50%, -50%);
-  font-size: 1.5rem; left: 50%;
-  transition: left .5s cubic-bezier(.34,1.56,.64,1);
-  filter: drop-shadow(0 0 8px rgba(255,50,50,.8));
+
+.pitch-marker {
+  width: 3px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+}
+.pitch-marker.mark-left  { margin-left: 15%; border-left: 2px dashed rgba(255, 61, 90, 0.5); }
+.pitch-marker.mark-right { margin-right: 15%; border-right: 2px dashed rgba(33, 150, 243, 0.5); }
+
+.pitch-center-pit {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 48px;
+  height: 36px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.25), transparent 75%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.pitch-center-pit .pit-line {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+.pitch-center-pit .pit-hazard {
+  position: relative;
+  z-index: 1;
+  font-size: 0.85rem;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 6px var(--gold)); }
+}
+
+/* The Realistic Rope Track */
+.tug-rope-track {
+  position: absolute;
+  top: 66px;
+  left: 32px;
+  right: 32px;
+  height: 16px;
   z-index: 2;
+  display: flex;
+  align-items: center;
 }
-.rope-marker.flash-left  { animation: flash-left  .5s ease; }
-.rope-marker.flash-right { animation: flash-right .5s ease; }
-@keyframes flash-left  { 0%,100%{filter:drop-shadow(0 0 8px #ff3d5a)} 50%{filter:drop-shadow(0 0 20px var(--blue))} }
-@keyframes flash-right { 0%,100%{filter:drop-shadow(0 0 8px #ff3d5a)} 50%{filter:drop-shadow(0 0 20px var(--red))} }
 
-.rope-chars {
-  display: flex; justify-content: space-between; width: 100%; padding: 0 .5rem;
-  font-size: 2.5rem;
+.tug-rope-line {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #8B5A2B,
+    #8B5A2B 7px,
+    #d4a017 7px,
+    #d4a017 13px,
+    #A0522D 13px,
+    #A0522D 17px
+  );
+  border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  transition: transform 0.15s ease-out;
 }
-.char-pull-left  { animation: pull-left  1.5s ease-in-out infinite; }
-.char-pull-right { animation: pull-right 1.5s ease-in-out infinite; transform: scaleX(-1); }
-.char-pull-left.winning  { animation: pull-left-fast  .7s ease-in-out infinite; }
-.char-pull-right.winning { animation: pull-right-fast .7s ease-in-out infinite; }
 
-@keyframes pull-left       { 0%,100%{transform:translateX(0)}     50%{transform:translateX(-6px)} }
-@keyframes pull-right      { 0%,100%{transform:translateX(0) scaleX(-1)} 50%{transform:translateX(6px) scaleX(-1)} }
-@keyframes pull-left-fast  { 0%,100%{transform:translateX(0)}     50%{transform:translateX(-12px)} }
-@keyframes pull-right-fast { 0%,100%{transform:translateX(0) scaleX(-1)} 50%{transform:translateX(12px) scaleX(-1)} }
+/* Rope Marker / Knotted Flag */
+.rope-marker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+  z-index: 5;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+}
+.rope-marker .flag-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  animation: flag-flutter 1.2s ease-in-out infinite;
+  display: inline-block;
+}
+.rope-marker .knot-ribbon {
+  width: 14px;
+  height: 16px;
+  background: #ff3344;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 51, 68, 0.8);
+  margin-top: -3px;
+}
+@keyframes flag-flutter {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-10deg) scale(1.08); }
+}
+
+.rope-marker.flash-left {
+  animation: flash-left-jerk 0.5s ease-out;
+}
+.rope-marker.flash-right {
+  animation: flash-right-jerk 0.5s ease-out;
+}
+@keyframes flash-left-jerk {
+  0% { transform: translate(-50%, -50%) translateX(0); }
+  30% { transform: translate(-50%, -50%) translateX(-14px) scale(1.2); }
+  60% { transform: translate(-50%, -50%) translateX(-6px); }
+  100% { transform: translate(-50%, -50%) translateX(0); }
+}
+@keyframes flash-right-jerk {
+  0% { transform: translate(-50%, -50%) translateX(0); }
+  30% { transform: translate(-50%, -50%) translateX(14px) scale(1.2); }
+  60% { transform: translate(-50%, -50%) translateX(6px); }
+  100% { transform: translate(-50%, -50%) translateX(0); }
+}
+
+/* Characters Row */
+.tug-characters {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tug-puller {
+  position: absolute;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+  transition: transform 0.45s cubic-bezier(0.34, 1.25, 0.64, 1);
+  --puller-color: var(--green);
+}
+
+.left-puller {
+  left: 8px;
+}
+.right-puller {
+  right: 8px;
+  --puller-color: var(--red);
+}
+.right-puller .puller-char-wrap {
+  transform: scaleX(-1);
+}
+
+/* Comic Speech Bubble on Strain / Pull */
+.puller-shout {
+  position: absolute;
+  top: -26px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: var(--font-num);
+  font-weight: 900;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px) scale(0.7);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+.puller-shout.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.puller-char-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: bottom center;
+}
+
+/* Avatar Head */
+.puller-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2.5px solid var(--puller-color);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 4;
+  margin-bottom: -10px;
+}
+
+/* Sweat Particle */
+.puller-sweat {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  font-size: 0.95rem;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.25s ease;
+  z-index: 5;
+}
+
+/* Pulling SVG Body */
+.puller-svg {
+  width: 48px;
+  height: 56px;
+  color: var(--puller-color);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Puller Name Tag */
+.puller-name {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  margin-top: 2px;
+  max-width: 75px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dust Puff FX under feet */
+.puller-dust {
+  position: absolute;
+  bottom: 4px;
+  width: 24px;
+  height: 10px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(200, 160, 100, 0.5), transparent 70%);
+  opacity: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ============================================
+   REALISTIC TUG & DRAGGING ANIMATIONS
+   ============================================ */
+
+/* 1. Neutral Idle Strain */
+.left-puller .puller-char-wrap {
+  animation: tug-lean-left 1.4s ease-in-out infinite alternate;
+}
+.right-puller .puller-char-wrap {
+  animation: tug-lean-right 1.4s ease-in-out infinite alternate;
+}
+@keyframes tug-lean-left {
+  0%   { transform: rotate(0deg) translateY(0); }
+  100% { transform: rotate(-4deg) translateY(-1px); }
+}
+@keyframes tug-lean-right {
+  0%   { transform: scaleX(-1) rotate(0deg) translateY(0); }
+  100% { transform: scaleX(-1) rotate(-4deg) translateY(-1px); }
+}
+
+/* 2. PULLING HARD (When winning / pulling) */
+.tug-puller.pulling-hard .puller-char-wrap {
+  animation: pull-heave 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+  filter: drop-shadow(0 0 10px var(--puller-color));
+}
+.right-puller.pulling-hard .puller-char-wrap {
+  animation: pull-heave-flip 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+}
+@keyframes pull-heave {
+  0%, 100% { transform: rotate(-5deg) translateX(0); }
+  50%      { transform: rotate(-14deg) translateX(-6px); }
+}
+@keyframes pull-heave-flip {
+  0%, 100% { transform: scaleX(-1) rotate(-5deg) translateX(0); }
+  50%      { transform: scaleX(-1) rotate(-14deg) translateX(-6px); }
+}
+
+/* 3. BEING DRAGGED (When losing ground / slipping towards center) */
+.tug-puller.being-dragged .puller-char-wrap {
+  animation: dragged-slip 0.4s ease-in-out infinite alternate !important;
+}
+.right-puller.being-dragged .puller-char-wrap {
+  animation: dragged-slip-flip 0.4s ease-in-out infinite alternate !important;
+}
+@keyframes dragged-slip {
+  0%   { transform: rotate(6deg) translateY(0); }
+  100% { transform: rotate(14deg) translateY(3px) translateX(4px); }
+}
+@keyframes dragged-slip-flip {
+  0%   { transform: scaleX(-1) rotate(6deg) translateY(0); }
+  100% { transform: scaleX(-1) rotate(14deg) translateY(3px) translateX(4px); }
+}
+
+.tug-puller.being-dragged .puller-sweat {
+  opacity: 1;
+  transform: scale(1.1);
+  animation: sweat-bob 0.4s ease-in-out infinite alternate;
+}
+@keyframes sweat-bob {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-4px) scale(1.25); }
+}
+
+.tug-puller.being-dragged .puller-dust {
+  opacity: 0.8;
+  animation: dust-kick 0.4s ease-in-out infinite;
+}
+@keyframes dust-kick {
+  0%   { transform: scale(0.6) translateX(-4px); opacity: 0.2; }
+  50%  { transform: scale(1.2) translateX(6px); opacity: 0.8; }
+  100% { transform: scale(1.5) translateX(12px); opacity: 0; }
+}
+
+/* 4. DRAGGED LOSS (Lost match - fell into center mud pit) */
+.tug-puller.dragged-loss .puller-char-wrap {
+  animation: fallen-slip 0.8s forwards !important;
+}
+.right-puller.dragged-loss .puller-char-wrap {
+  animation: fallen-slip-flip 0.8s forwards !important;
+}
+@keyframes fallen-slip {
+  0%   { transform: rotate(0); }
+  100% { transform: rotate(60deg) translateY(14px) translateX(18px); filter: grayscale(0.5); }
+}
+@keyframes fallen-slip-flip {
+  0%   { transform: scaleX(-1) rotate(0); }
+  100% { transform: scaleX(-1) rotate(60deg) translateY(14px) translateX(18px); filter: grayscale(0.5); }
+}
+
+/* 5. VICTORIOUS (Won the match) */
+.tug-puller.victorious .puller-char-wrap {
+  animation: victory-bounce 0.6s ease-in-out infinite alternate !important;
+}
+.right-puller.victorious .puller-char-wrap {
+  animation: victory-bounce-flip 0.6s ease-in-out infinite alternate !important;
+}
+@keyframes victory-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-16px) scale(1.15); filter: drop-shadow(0 0 12px var(--gold)); }
+}
+@keyframes victory-bounce-flip {
+  0%   { transform: scaleX(-1) translateY(0) scale(1); }
+  100% { transform: scaleX(-1) translateY(-16px) scale(1.15); filter: drop-shadow(0 0 12px var(--gold)); }
+}
 
 /* ---- Keypad (shared) ---- */
 .keypad {
@@ -572,16 +921,16 @@ body {
 }
 
 .center-panel {
-  width: 200px; flex-shrink: 0; display: flex; flex-direction: column;
+  width: clamp(220px, 25vw, 290px); flex-shrink: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: .8rem;
-  padding: .8rem .4rem; background: var(--bg);
+  padding: .8rem .5rem; background: var(--bg);
 }
 .center-scores {
   display: flex; align-items: center; justify-content: space-between; width: 100%;
   font-family: var(--font-num); font-size: 1.8rem; font-weight: 900;
 }
 .center-info { text-align: center; display: flex; flex-direction: column; gap: .2rem; align-items: center; }
-.center-panel .rope-area { width: 100%; }
+.center-panel .tug-arena { width: 100%; }
 
 /* ============================================
    ONLINE GAME VIEW
@@ -609,7 +958,8 @@ body {
 .opp-score-val { color: var(--red); }
 .score-divider { color: var(--text-dim); font-size: 1rem; }
 
-.online-rope-area { flex-shrink: 0; }
+.online-rope-area,
+.online-tug-arena { flex-shrink: 0; }
 .online-info-row  { display: flex; justify-content: space-between; align-items: center; padding: .2rem .3rem; }
 
 .online-question-area { text-align: center; padding: .6rem .5rem; }

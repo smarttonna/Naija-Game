@@ -53,6 +53,22 @@ const Game = {
     document.getElementById('local-t1-panel').style.setProperty('--team-color', t1char.color);
     document.getElementById('local-t2-panel').style.setProperty('--team-color', t2char.color);
 
+    // Setup Tug-of-War Arena pullers with character portraits & team colors
+    const setPuller = (side, char, name) => {
+      const avatar = document.getElementById(`local-avatar-${side}`);
+      const nameEl = document.getElementById(`local-puller-name-${side}`);
+      const puller = document.getElementById(`local-puller-${side}`);
+      if (avatar) {
+        avatar.style.backgroundImage = `url('assets/characters/${char.file}')`;
+        avatar.style.backgroundPosition = char.bgPos;
+        avatar.style.borderColor = char.color;
+      }
+      if (nameEl) nameEl.textContent = name;
+      if (puller) puller.style.setProperty('--puller-color', char.color);
+    };
+    setPuller('left', t1char, settings.team1Name || t1char.name);
+    setPuller('right', t2char, settings.team2Name || t2char.name);
+
     Game.showView('local');
     Game.updateRopeUI();
     Game.nextRoundLocal();
@@ -145,6 +161,22 @@ const Game = {
     document.getElementById('online-my-char').style.backgroundPosition = charMe.bgPos;
     document.getElementById('online-opp-char').style.backgroundImage   = `url('assets/characters/${charOpp.file}')`;
     document.getElementById('online-opp-char').style.backgroundPosition = charOpp.bgPos;
+
+    // Setup Online Tug-of-War Arena pullers
+    const setOnlinePuller = (side, char, name) => {
+      const avatar = document.getElementById(`online-avatar-${side}`);
+      const nameEl = document.getElementById(`online-puller-name-${side}`);
+      const puller = document.getElementById(`online-puller-${side}`);
+      if (avatar) {
+        avatar.style.backgroundImage = `url('assets/characters/${char.file}')`;
+        avatar.style.backgroundPosition = char.bgPos;
+        avatar.style.borderColor = char.color;
+      }
+      if (nameEl) nameEl.textContent = name;
+      if (puller) puller.style.setProperty('--puller-color', char.color);
+    };
+    setOnlinePuller('left', charMe, myName);
+    setOnlinePuller('right', charOpp, oppName || 'Opponent');
 
     Game.showView('online');
     Game.updateRopeUI();
@@ -293,23 +325,102 @@ const Game = {
   },
 
   updateRopeUI() {
-    // rope-marker moves from 0% (team1 wins) to 100% (team2 wins)
-    const pct = ((Game.ropePosition + 5) / 10) * 100;
-    const marker = document.getElementById('rope-marker');
-    if (marker) marker.style.left = `${pct}%`;
+    // ropePosition ranges from -5 (team1/left wins) to +5 (team2/right wins)
+    const pos = Game.ropePosition;
+    // Map -5..+5 to percentage 18%..82% so marker stays within the pullers
+    const pct = 50 + (pos / 5) * 32;
 
-    // Pulling animation intensity
-    const leftChars  = document.querySelectorAll('.char-pull-left');
-    const rightChars = document.querySelectorAll('.char-pull-right');
-    leftChars.forEach(el  => el.classList.toggle('winning', Game.ropePosition < 0));
-    rightChars.forEach(el => el.classList.toggle('winning', Game.ropePosition > 0));
+    // Update all rope markers (local and online)
+    document.querySelectorAll('.rope-marker').forEach(marker => {
+      marker.style.left = `${pct}%`;
+    });
+
+    // Update Puller positioning & dragging states
+    const updateTugPair = (leftId, rightId) => {
+      const leftEl  = document.getElementById(leftId);
+      const rightEl = document.getElementById(rightId);
+      if (!leftEl || !rightEl) return;
+
+      leftEl.classList.remove('pulling-hard', 'being-dragged', 'dragged-loss', 'victorious');
+      rightEl.classList.remove('pulling-hard', 'being-dragged', 'dragged-loss', 'victorious');
+
+      if (pos < 0) {
+        // Team 1 (Left) is WINNING / PULLING
+        // Right is BEING DRAGGED forward toward center!
+        const dragDist = Math.abs(pos) * 8; // dragged forward up to 40px
+        const pullDist = Math.abs(pos) * 3; // step back up to 15px
+
+        leftEl.style.transform = `translateX(-${pullDist}px)`;
+        rightEl.style.transform = `translateX(-${dragDist}px)`;
+
+        leftEl.classList.add('pulling-hard');
+        rightEl.classList.add('being-dragged');
+
+        if (pos <= -5) {
+          rightEl.classList.add('dragged-loss');
+          leftEl.classList.add('victorious');
+        }
+      } else if (pos > 0) {
+        // Team 2 (Right) is WINNING / PULLING
+        // Left is BEING DRAGGED forward toward center!
+        const dragDist = pos * 8; // dragged forward up to 40px
+        const pullDist = pos * 3; // step back up to 15px
+
+        leftEl.style.transform = `translateX(${dragDist}px)`;
+        rightEl.style.transform = `translateX(${pullDist}px)`;
+
+        rightEl.classList.add('pulling-hard');
+        leftEl.classList.add('being-dragged');
+
+        if (pos >= 5) {
+          leftEl.classList.add('dragged-loss');
+          rightEl.classList.add('victorious');
+        }
+      } else {
+        // Neutral (tied at 0)
+        leftEl.style.transform = 'translateX(0px)';
+        rightEl.style.transform = 'translateX(0px)';
+      }
+    };
+
+    updateTugPair('local-puller-left', 'local-puller-right');
+    updateTugPair('online-puller-left', 'online-puller-right');
   },
 
   flashRope(team) {
-    const marker = document.getElementById('rope-marker');
-    if (!marker) return;
-    marker.classList.add(team === 1 ? 'flash-left' : 'flash-right');
-    setTimeout(() => marker.classList.remove('flash-left','flash-right'), 600);
+    document.querySelectorAll('.rope-marker').forEach(marker => {
+      marker.classList.add(team === 1 ? 'flash-left' : 'flash-right');
+      setTimeout(() => marker.classList.remove('flash-left', 'flash-right'), 600);
+    });
+
+    // Fun battle shouts in comic bubbles!
+    const winShouts = ['HEAVE! 🔥', 'ODOGWU! 💪', 'PULL AM! ⚡', 'I SABI! 🎯', 'NO SHAKING! 💥'];
+    const dragShouts = ['YEEPA! 😱', 'SLIPPING! 💦', 'E CHOKE! 😫', 'HOLD AM! 🏃‍♂️', 'WAIT O! 😵'];
+    const winWord = winShouts[Math.floor(Math.random() * winShouts.length)];
+    const dragWord = dragShouts[Math.floor(Math.random() * dragShouts.length)];
+
+    const shoutPair = (winId, dragId) => {
+      const winEl = document.getElementById(winId);
+      const dragEl = document.getElementById(dragId);
+      if (winEl) {
+        winEl.textContent = winWord;
+        winEl.classList.add('show');
+        setTimeout(() => winEl.classList.remove('show'), 900);
+      }
+      if (dragEl) {
+        dragEl.textContent = dragWord;
+        dragEl.classList.add('show');
+        setTimeout(() => dragEl.classList.remove('show'), 900);
+      }
+    };
+
+    if (team === 1) {
+      shoutPair('local-shout-left', 'local-shout-right');
+      shoutPair('online-shout-left', 'online-shout-right');
+    } else {
+      shoutPair('local-shout-right', 'local-shout-left');
+      shoutPair('online-shout-right', 'online-shout-left');
+    }
   },
 
   updateScoreLocal() {
