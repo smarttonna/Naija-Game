@@ -88,6 +88,47 @@ body {
 .btn-sm  { font-size: .85rem; padding: .45rem 1rem; }
 .btn-full { width: 100%; }
 
+.btn-google {
+  background: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #dadce0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  font-weight: 700;
+  gap: .65rem;
+  padding: .75rem 1.4rem;
+}
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+.google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.25rem 0;
+  color: var(--text-dim);
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.auth-divider span {
+  padding: 0 .8rem;
+}
+
 .btn-back {
   display: inline-flex; align-items: center; gap:.4rem;
   background: none; border: none; color: var(--text-dim);

@@ -30,6 +30,12 @@ const App = {
         App.profile = await Auth.loadProfile(user.uid);
         if (!App.profile) {
           App.showScreen('character');
+          App.renderCharacterGrid();
+          const charInput = document.getElementById('char-username');
+          if (charInput && !charInput.value && user.displayName) {
+            const cleanName = user.displayName.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 15);
+            if (cleanName) charInput.value = cleanName;
+          }
         } else {
           App.selectedChar = CHARACTERS.find(c => c.id === App.profile.character) || CHARACTERS[0];
           App.showScreen('home');

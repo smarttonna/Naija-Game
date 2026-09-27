@@ -16,6 +16,21 @@ const Auth = {
     } catch (e) { cb(e.message); }
   },
 
+  async loginWithGoogle(cb) {
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      await auth.signInWithPopup(provider);
+      cb(null);
+    } catch (e) {
+      if (e.code === 'auth/popup-closed-by-user') {
+        cb(null);
+        return;
+      }
+      cb(e.message);
+    }
+  },
+
   async logout() {
     App.cleanup();
     if (App.challengeListener) { App.challengeListener(); App.challengeListener = null; }

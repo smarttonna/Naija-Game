@@ -10,9 +10,12 @@
 
 ## Step 2: Enable Authentication
 
-1. In Firebase Console → **Authentication** → Get Started
-2. Enable **Email/Password** provider
-3. Click Save
+1. In Firebase Console → **Authentication** → **Sign-in method**
+2. Enable **Email/Password** provider → Click Save
+3. Enable **Google** provider → Select your project support email → Click Save
+4. Go to **Authentication** → **Settings** → **Authorized domains**:
+   - Ensure `localhost` is listed.
+   - If you access the game via `http://127.0.0.1/Game/`, click **Add domain** and add `127.0.0.1`.
 
 ---
 
