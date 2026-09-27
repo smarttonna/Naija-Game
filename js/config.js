@@ -5,13 +5,14 @@
  */
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBxF8ZDXBbNurWjvK262Jdu2mHM5Kx5l6g",
+  authDomain: "naija-game.firebaseapp.com",
+  databaseURL: "https://naija-game-default-rtdb.firebaseio.com",
+  projectId: "naija-game",
+  storageBucket: "naija-game.firebasestorage.app",
+  messagingSenderId: "754519002596",
+  appId: "1:754519002596:web:df3478785eca97327d4bf1",
+  measurementId: "G-HP3LW1GK4M"
 };
 
 firebase.initializeApp(firebaseConfig);
