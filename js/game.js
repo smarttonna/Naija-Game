@@ -53,11 +53,12 @@ const Game = {
     document.getElementById('local-t1-panel').style.setProperty('--team-color', t1char.color);
     document.getElementById('local-t2-panel').style.setProperty('--team-color', t2char.color);
 
-    // Setup Tug-of-War Arena pullers with character portraits & team colors
-    const setPuller = (side, char, name) => {
+    // Setup Tug-of-War Arena pullers with character portraits, real human images & team colors
+    const setPuller = (side, char, name, pullerImg) => {
       const avatar = document.getElementById(`local-avatar-${side}`);
       const nameEl = document.getElementById(`local-puller-name-${side}`);
       const puller = document.getElementById(`local-puller-${side}`);
+      const imgEl  = document.getElementById(`local-puller-img-${side}`);
       if (avatar) {
         avatar.style.backgroundImage = `url('assets/characters/${char.file}')`;
         avatar.style.backgroundPosition = char.bgPos;
@@ -65,9 +66,17 @@ const Game = {
       }
       if (nameEl) nameEl.textContent = name;
       if (puller) puller.style.setProperty('--puller-color', char.color);
+      if (imgEl) {
+        imgEl.src = `assets/characters/${pullerImg}`;
+      }
     };
-    setPuller('left', t1char, settings.team1Name || t1char.name);
-    setPuller('right', t2char, settings.team2Name || t2char.name);
+    let t1Img = t1char.pullerImg || 'puller_agbada_man.png';
+    let t2Img = t2char.pullerImg || 'puller_ankara_woman.png';
+    if (t1Img === t2Img) {
+      t2Img = (t1Img === 'puller_agbada_man.png') ? 'puller_isiagu_man.png' : 'puller_agbada_man.png';
+    }
+    setPuller('left', t1char, settings.team1Name || t1char.name, t1Img);
+    setPuller('right', t2char, settings.team2Name || t2char.name, t2Img);
 
     Game.showView('local');
     Game.updateRopeUI();
@@ -162,11 +171,12 @@ const Game = {
     document.getElementById('online-opp-char').style.backgroundImage   = `url('assets/characters/${charOpp.file}')`;
     document.getElementById('online-opp-char').style.backgroundPosition = charOpp.bgPos;
 
-    // Setup Online Tug-of-War Arena pullers
-    const setOnlinePuller = (side, char, name) => {
+    // Setup Online Tug-of-War Arena pullers with character portraits, real human images & team colors
+    const setOnlinePuller = (side, char, name, pullerImg) => {
       const avatar = document.getElementById(`online-avatar-${side}`);
       const nameEl = document.getElementById(`online-puller-name-${side}`);
       const puller = document.getElementById(`online-puller-${side}`);
+      const imgEl  = document.getElementById(`online-puller-img-${side}`);
       if (avatar) {
         avatar.style.backgroundImage = `url('assets/characters/${char.file}')`;
         avatar.style.backgroundPosition = char.bgPos;
@@ -174,9 +184,17 @@ const Game = {
       }
       if (nameEl) nameEl.textContent = name;
       if (puller) puller.style.setProperty('--puller-color', char.color);
+      if (imgEl) {
+        imgEl.src = `assets/characters/${pullerImg}`;
+      }
     };
-    setOnlinePuller('left', charMe, myName);
-    setOnlinePuller('right', charOpp, oppName || 'Opponent');
+    let myImg = charMe.pullerImg || 'puller_agbada_man.png';
+    let oppImg = charOpp.pullerImg || 'puller_ankara_woman.png';
+    if (myImg === oppImg) {
+      oppImg = (myImg === 'puller_agbada_man.png') ? 'puller_isiagu_man.png' : 'puller_agbada_man.png';
+    }
+    setOnlinePuller('left', charMe, myName, myImg);
+    setOnlinePuller('right', charOpp, oppName || 'Opponent', oppImg);
 
     Game.showView('online');
     Game.updateRopeUI();

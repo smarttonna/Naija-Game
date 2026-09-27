@@ -427,7 +427,13 @@ body {
 /* ============================================
    GAME SCREEN — SHARED
    ============================================ */
-#screen-game { background: var(--bg); overflow: hidden; }
+#screen-game {
+  background: var(--bg);
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
 
 /* Countdown Overlay */
 .countdown-overlay {
@@ -529,9 +535,9 @@ body {
 /* The Realistic Rope Track */
 .tug-rope-track {
   position: absolute;
-  top: 66px;
-  left: 32px;
-  right: 32px;
+  top: 68px;
+  left: 20px;
+  right: 20px;
   height: 16px;
   z-index: 2;
   display: flex;
@@ -617,7 +623,7 @@ body {
 
 .tug-puller {
   position: absolute;
-  bottom: 8px;
+  bottom: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -627,10 +633,10 @@ body {
 }
 
 .left-puller {
-  left: 8px;
+  left: 4px;
 }
 .right-puller {
-  right: 8px;
+  right: 4px;
   --puller-color: var(--red);
 }
 .right-puller .puller-char-wrap {
@@ -669,63 +675,72 @@ body {
   transform-origin: bottom center;
 }
 
-/* Avatar Head */
-.puller-avatar {
-  width: 34px;
-  height: 34px;
+/* Real Human Nigerian Puller Image */
+.puller-human-img {
+  height: 98px;
+  width: auto;
+  max-width: 125px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+  display: block;
+  user-select: none;
+  transition: filter 0.3s ease;
+}
+
+/* Badge / Name row under feet */
+.puller-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+  background: rgba(8, 14, 28, 0.85);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.puller-avatar-dot {
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 2.5px solid var(--puller-color);
+  border: 1.5px solid var(--puller-color);
   background-size: 300% 100%;
   background-repeat: no-repeat;
   background-color: var(--bg-card);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 4;
-  margin-bottom: -10px;
+  flex-shrink: 0;
 }
 
-/* Sweat Particle */
-.puller-sweat {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  font-size: 0.95rem;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.25s ease;
-  z-index: 5;
-}
-
-/* Pulling SVG Body */
-.puller-svg {
-  width: 48px;
-  height: 56px;
-  color: var(--puller-color);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-/* Puller Name Tag */
 .puller-name {
   font-size: 0.72rem;
   font-weight: 800;
   color: #ffffff;
-  background: rgba(0, 0, 0, 0.65);
-  padding: 0.1rem 0.45rem;
-  border-radius: 6px;
-  margin-top: 2px;
   max-width: 75px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* Sweat Particle */
+.puller-sweat {
+  position: absolute;
+  top: 2px;
+  right: 12px;
+  font-size: 1.1rem;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.25s ease;
+  z-index: 5;
+}
+
 /* Dust Puff FX under feet */
 .puller-dust {
   position: absolute;
-  bottom: 4px;
-  width: 24px;
-  height: 10px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(200, 160, 100, 0.5), transparent 70%);
+  bottom: 16px;
+  width: 28px;
+  height: 12px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(200, 160, 100, 0.55), transparent 70%);
   opacity: 0;
   border-radius: 50%;
   pointer-events: none;
@@ -883,7 +898,11 @@ body {
    LOCAL GAME VIEW
    ============================================ */
 .game-local {
-  display: flex; height: 100vh; gap: 0; overflow: hidden;
+  display: flex;
+  min-height: 100%;
+  height: auto;
+  gap: 0;
+  overflow: visible;
 }
 .team-panel {
   flex: 1; display: flex; flex-direction: column; padding: .8rem;
@@ -936,8 +955,16 @@ body {
    ONLINE GAME VIEW
    ============================================ */
 .game-online {
-  display: flex; flex-direction: column; height: 100vh;
-  padding: .8rem; gap: .5rem; max-width: 500px; margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: auto;
+  padding: .8rem;
+  padding-bottom: max(3.5rem, env(safe-area-inset-bottom, 28px));
+  gap: .5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow-y: visible;
 }
 .online-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1064,24 +1091,53 @@ body {
 /* ============================================
    RESPONSIVE
    ============================================ */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .mode-grid { grid-template-columns: 1fr 1fr; }
   .char-grid { grid-template-columns: repeat(2, 1fr); }
-  .center-panel { width: 120px; }
-  .center-panel .center-scores { font-size: 1.3rem; }
-  .question-box { font-size: .9rem; min-height: 3rem; }
-  .keypad button { font-size: 1.1rem; }
+  
+  /* Local 2-Player on mobile: stacked layout with smooth vertical scrolling */
+  .game-local {
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+    padding-bottom: max(3.5rem, env(safe-area-inset-bottom, 28px));
+    overflow-y: visible;
+  }
+  .team-panel {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: .8rem .6rem;
+  }
+  .team-panel.team-right {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+  .center-panel {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: .6rem .4rem;
+  }
+  .center-panel .center-scores { font-size: 1.5rem; }
+  .game-local .keypad button { aspect-ratio: unset; padding: .65rem .4rem; font-size: 1.15rem; }
+  .online-keypad button { padding: .75rem .4rem; font-size: 1.2rem; }
+  .question-box { font-size: 1.1rem; min-height: 3.5rem; }
   .stats-bar { gap: .4rem; }
   .stat-pill { padding: .5rem .4rem; gap: .4rem; }
   .stat-pill strong { font-size: 1rem; }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
   .mode-grid { grid-template-columns: 1fr; }
-  .game-local { flex-direction: column; }
-  .team-panel, .center-panel { width: 100%; border: none; border-bottom: 1px solid var(--border); }
-  .center-panel { width: 100%; padding: .4rem; }
-  .game-local .keypad button { aspect-ratio: unset; padding: .5rem; }
+  .tug-arena { height: 145px; }
+  .online-tug-arena { height: 150px; }
+  .puller-human-img { height: 86px; max-width: 110px; }
+  .tug-rope-track { top: 60px; left: 16px; right: 16px; }
+  .question-box { font-size: 1rem; min-height: 3.2rem; }
+  .puller-shout { top: -22px; font-size: 0.7rem; padding: 0.15rem 0.4rem; }
 }
 
 /* Scrollbar styling */

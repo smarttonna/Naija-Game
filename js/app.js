@@ -4,12 +4,12 @@
 
 // ===================== CHARACTERS =====================
 const CHARACTERS = [
-  { id: 'tunde',  name: 'Tunde',  sprite: 'tunde',  color: '#1565c0', imgX: '0%',    imgY: '0%',   file: 'set_a.jpg', bgPos: '16% center'  },
-  { id: 'amaka',  name: 'Amaka',  sprite: 'amaka',  color: '#e91e63', imgX: '50%',   imgY: '0%',   file: 'set_a.jpg', bgPos: '50% center'  },
-  { id: 'emeka',  name: 'Emeka',  sprite: 'emeka',  color: '#f57c00', imgX: '83%',   imgY: '0%',   file: 'set_a.jpg', bgPos: '83% center'  },
-  { id: 'fatima', name: 'Fatima', sprite: 'fatima', color: '#e91e8e', imgX: '16%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '16% center'  },
-  { id: 'chike',  name: 'Chike',  sprite: 'chike',  color: '#2e7d32', imgX: '50%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '50% center'  },
-  { id: 'sade',   name: 'Sade',   sprite: 'sade',   color: '#7b1fa2', imgX: '83%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '83% center'  },
+  { id: 'tunde',  name: 'Tunde',  sprite: 'tunde',  color: '#1565c0', imgX: '0%',    imgY: '0%',   file: 'set_a.jpg', bgPos: '16% center', pullerImg: 'puller_agbada_man.png',   gender: 'm' },
+  { id: 'amaka',  name: 'Amaka',  sprite: 'amaka',  color: '#e91e63', imgX: '50%',   imgY: '0%',   file: 'set_a.jpg', bgPos: '50% center', pullerImg: 'puller_ankara_woman.png', gender: 'f' },
+  { id: 'emeka',  name: 'Emeka',  sprite: 'emeka',  color: '#f57c00', imgX: '83%',   imgY: '0%',   file: 'set_a.jpg', bgPos: '83% center', pullerImg: 'puller_isiagu_man.png',   gender: 'm' },
+  { id: 'fatima', name: 'Fatima', sprite: 'fatima', color: '#e91e8e', imgX: '16%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '16% center', pullerImg: 'puller_ankara_woman.png', gender: 'f' },
+  { id: 'chike',  name: 'Chike',  sprite: 'chike',  color: '#2e7d32', imgX: '50%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '50% center', pullerImg: 'puller_agbada_man.png',   gender: 'm' },
+  { id: 'sade',   name: 'Sade',   sprite: 'sade',   color: '#7b1fa2', imgX: '83%',   imgY: '0%',   file: 'set_b.jpg', bgPos: '83% center', pullerImg: 'puller_ankara_woman.png', gender: 'f' },
 ];
 
 // ===================== APP STATE =====================
