@@ -197,6 +197,10 @@ async function loadLeaderboard() {
     });
     if (!snap.size) list.innerHTML = '<p class="loading-text">No players yet. Be the first!</p>';
   } catch (e) {
-    list.innerHTML = '<p class="loading-text">Could not load. Check Firebase setup.</p>';
+    if (e.code === 'not-found' || (e.message && e.message.includes('not exist'))) {
+      list.innerHTML = '<p class="loading-text" style="color:var(--gold);padding:1rem;">⚠️ Cloud Firestore database has not been created yet.<br><small style="color:var(--text-dim)">Go to Firebase Console → Firestore Database → Create Database.</small></p>';
+    } else {
+      list.innerHTML = '<p class="loading-text">Could not load leaderboard. Check Firebase setup.</p>';
+    }
   }
 }
