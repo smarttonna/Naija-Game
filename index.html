@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Naija Math Battle 🇳🇬</title>
+  <meta name="description" content="Nigeria's ultimate multiplayer math tug-of-war game. Battle friends online or locally!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ======================== SPLASH ======================== -->
+<div id="screen-splash" class="screen active">
+  <div class="splash-hero">
+    <img src="assets/hero.jpg" alt="Naija Math Battle" class="hero-img" />
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <div class="logo-badge">🇳🇬</div>
+        <h1 class="game-title">Naija Math Battle</h1>
+        <p class="game-tagline">Who sabi math pass? Prove am! ⚡</p>
+        <div class="splash-btns">
+          <button class="btn btn-primary btn-xl" id="btn-splash-play" onclick="App.showScreen('auth')">
+            🎮 Start Playing
+          </button>
+          <button class="btn btn-ghost btn-xl" onclick="App.showScreen('auth'); setTimeout(()=>document.getElementById('tab-register').click(), 100)">
+            ✨ Create Account
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== AUTH ======================== -->
+<div id="screen-auth" class="screen">
+  <div class="auth-container">
+    <div class="auth-logo">
+      <span class="flag">🇳🇬</span>
+      <h2>Naija Math Battle</h2>
+    </div>
+    <div class="auth-tabs">
+      <button class="tab-btn active" id="tab-login"    onclick="switchTab('login')">Login</button>
+      <button class="tab-btn"        id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login" class="auth-form">
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" />
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="handleLogin()">🚀 Login</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="form-register" class="auth-form" style="display:none">
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="your@email.com" />
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min 6 characters" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="handleRegister()">🎉 Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== CHARACTER SELECT ======================== -->
+<div id="screen-character" class="screen">
+  <div class="char-select-container">
+    <div class="screen-header">
+      <h2>Choose Your Fighter</h2>
+      <p>Pick your character and enter your Naija tag</p>
+    </div>
+    <div class="input-group" style="max-width:320px;margin:0 auto 1.5rem;">
+      <label>Your Username (unique)</label>
+      <input type="text" id="char-username" placeholder="e.g. TundeMath007" maxlength="20" />
+    </div>
+    <div id="char-grid" class="char-grid">
+      <!-- Populated by app.js -->
+    </div>
+    <button class="btn btn-primary btn-xl" onclick="App.saveCharacter()">✅ Confirm & Enter Game</button>
+  </div>
+</div>
+
+<!-- ======================== HOME ======================== -->
+<div id="screen-home" class="screen">
+  <div class="home-container">
+    <!-- Header -->
+    <header class="home-header">
+      <div class="home-logo">🇳🇬 <span>NMB</span></div>
+      <div class="home-user" onclick="App.showScreen('character'); App.renderCharacterGrid()">
+        <div id="home-char-img" class="mini-char"></div>
+        <span id="home-char-name">Tunde</span>
+      </div>
+    </header>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-pill">
+        <span class="stat-icon">🏆</span>
+        <div><strong id="home-wins">0</strong><small>Wins</small></div>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-icon">⭐</span>
+        <div><strong id="home-rating">1000</strong><small>Rating</small></div>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-icon">💔</span>
+        <div><strong id="home-losses">0</strong><small>Losses</small></div>
+      </div>
+    </div>
+
+    <!-- Welcome -->
+    <div class="welcome-msg">
+      <h1>Welcome, <span id="home-username">Player</span>! 👋</h1>
+      <p>Ready to battle? Settle the score — who sabi maths pass?</p>
+    </div>
+
+    <!-- Mode Cards -->
+    <div class="mode-grid">
+      <!-- Local (Same Device) -->
+      <div class="mode-card" onclick="openLocalSetup()">
+        <div class="mode-icon">📱</div>
+        <h3>Local Battle</h3>
+        <p>Same device, two players. Pass 'n' Play!</p>
+        <span class="mode-tag">Same Device</span>
+      </div>
+
+      <!-- Online (Room Code) -->
+      <div class="mode-card" onclick="App.showScreen('room')">
+        <div class="mode-icon">🌐</div>
+        <h3>Online Battle</h3>
+        <p>Create a room or join via code. Any device!</p>
+        <span class="mode-tag">Room Code</span>
+      </div>
+
+      <!-- Challenge Friend -->
+      <div class="mode-card" onclick="App.showScreen('search')">
+        <div class="mode-icon">⚔️</div>
+        <h3>Challenge Friend</h3>
+        <p>Search by username and send a battle invite!</p>
+        <span class="mode-tag">By Username</span>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="mode-card" onclick="App.showScreen('leaderboard'); loadLeaderboard()">
+        <div class="mode-icon">🏅</div>
+        <h3>Leaderboard</h3>
+        <p>See who's the top math boss in Nigeria!</p>
+        <span class="mode-tag">Rankings</span>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost btn-sm logout-btn" onclick="Auth.logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- ======================== LOCAL SETUP ======================== -->
+<div id="screen-local-setup" class="screen">
+  <div class="setup-container">
+    <button class="btn-back" onclick="App.showScreen('home')">← Back</button>
+    <h2 class="setup-title">⚙️ Local Battle Setup</h2>
+
+    <div class="setup-section">
+      <h4>Team 1 (Left)</h4>
+      <input type="text" id="local-t1-name-input" placeholder="Team 1 Name" maxlength="12" value="Team 1" />
+      <div class="char-grid-small" id="local-char-grid-1"></div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Team 2 (Right)</h4>
+      <input type="text" id="local-t2-name-input" placeholder="Team 2 Name" maxlength="12" value="Team 2" />
+      <div class="char-grid-small" id="local-char-grid-2"></div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Math Operations</h4>
+      <div class="toggle-group" id="ops-local">
+        <button class="op-btn active" data-op="add">➕ Add</button>
+        <button class="op-btn" data-op="subtract">➖ Subtract</button>
+        <button class="op-btn" data-op="multiply">✖️ Multiply</button>
+        <button class="op-btn" data-op="divide">➗ Divide</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Difficulty</h4>
+      <div class="toggle-group" id="diff-local">
+        <button class="diff-btn active" data-diff="easy">🟢 Easy</button>
+        <button class="diff-btn" data-diff="medium">🟡 Medium</button>
+        <button class="diff-btn" data-diff="hard">🔴 Hard</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Question Type</h4>
+      <div class="toggle-group" id="qtype-local">
+        <button class="qtype-btn active" data-type="arithmetic">🔢 Arithmetic</button>
+        <button class="qtype-btn" data-type="story">📖 Naija Stories</button>
+        <button class="qtype-btn" data-type="mixed">🔀 Mixed (Shuffled)</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Number of Rounds</h4>
+      <select id="rounds-local" class="select-input">
+        <option value="5">5 Rounds</option>
+        <option value="10" selected>10 Rounds</option>
+        <option value="15">15 Rounds</option>
+        <option value="20">20 Rounds</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-xl" onclick="startLocalFromSetup()">🎮 Start Battle!</button>
+  </div>
+</div>
+
+<!-- ======================== ONLINE ROOM ======================== -->
+<div id="screen-room" class="screen">
+  <div class="room-container">
+    <button class="btn-back" onclick="App.showScreen('home')">← Back</button>
+    <h2>🌐 Online Battle</h2>
+    <div class="room-options">
+      <div class="room-card" onclick="Lobby.createRoom()">
+        <span class="room-icon">➕</span>
+        <h3>Create Room</h3>
+        <p>Generate a code and share with your friend</p>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🔑</span>
+        <h3>Join Room</h3>
+        <p>Enter a room code to join a battle</p>
+        <input type="text" id="join-code-input" placeholder="NAI-XXXXXX" maxlength="10"
+               style="margin-top:.8rem;width:100%;" />
+        <button class="btn btn-primary btn-full" style="margin-top:.6rem;"
+                onclick="Lobby.joinRoom(document.getElementById('join-code-input').value.trim().toUpperCase())">
+          Join →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SEARCH / CHALLENGE ======================== -->
+<div id="screen-search" class="screen">
+  <div class="room-container">
+    <button class="btn-back" onclick="App.showScreen('home')">← Back</button>
+    <h2>⚔️ Challenge a Friend</h2>
+    <p class="sub-text">Enter your friend's exact username to challenge them to a math battle!</p>
+    <div class="search-box">
+      <input type="text" id="search-username" placeholder="Enter username..." maxlength="20" />
+      <button class="btn btn-primary" onclick="Lobby.challengeUser(document.getElementById('search-username').value.trim())">
+        Send Challenge ⚔️
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== WAITING ROOM ======================== -->
+<div id="screen-waiting" class="screen">
+  <div class="waiting-container">
+    <div class="waiting-icon">⏳</div>
+    <h2 id="waiting-title">Waiting...</h2>
+    <p id="waiting-sub">Hang on tight!</p>
+    <div class="room-code-display">
+      <span class="code-label">Room Code</span>
+      <span id="waiting-code" class="code-value">NAI-000000</span>
+      <button class="btn btn-ghost btn-sm" onclick="copyRoomCode()">📋 Copy</button>
+    </div>
+    <div class="waiting-dots"><span></span><span></span><span></span></div>
+    <button class="btn btn-ghost" onclick="cancelRoom()">✕ Cancel</button>
+  </div>
+</div>
+
+<!-- ======================== ONLINE SETUP (Host) ======================== -->
+<div id="screen-setup" class="screen">
+  <div class="setup-container">
+    <h2 class="setup-title">⚙️ Game Setup <small id="setup-room-id" style="font-size:.6em;opacity:.5"></small></h2>
+    <p class="sub-text">Configure the battle. Your friend is ready!</p>
+
+    <div class="setup-section">
+      <h4>Math Operations</h4>
+      <div class="toggle-group">
+        <button class="op-btn active" data-op="add">➕ Add</button>
+        <button class="op-btn" data-op="subtract">➖ Subtract</button>
+        <button class="op-btn" data-op="multiply">✖️ Multiply</button>
+        <button class="op-btn" data-op="divide">➗ Divide</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Difficulty</h4>
+      <div class="toggle-group">
+        <button class="diff-btn active" data-diff="easy">🟢 Easy</button>
+        <button class="diff-btn" data-diff="medium">🟡 Medium</button>
+        <button class="diff-btn" data-diff="hard">🔴 Hard</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Question Type</h4>
+      <div class="toggle-group">
+        <button class="qtype-btn active" data-type="arithmetic">🔢 Arithmetic</button>
+        <button class="qtype-btn" data-type="story">📖 Naija Stories</button>
+        <button class="qtype-btn" data-type="mixed">🔀 Mixed (Shuffled)</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h4>Rounds</h4>
+      <select id="rounds-select" class="select-input">
+        <option value="5">5 Rounds</option>
+        <option value="10" selected>10 Rounds</option>
+        <option value="15">15 Rounds</option>
+        <option value="20">20 Rounds</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary btn-xl" id="btn-start-game">🚀 Start Battle!</button>
+  </div>
+</div>
+
+<!-- ======================== GAME SCREEN ======================== -->
+<div id="screen-game" class="screen no-pad">
+
+  <!-- Countdown overlay -->
+  <div id="countdown-overlay" class="countdown-overlay">
+    <div class="countdown-num">3</div>
+  </div>
+
+  <!-- ===== LOCAL VIEW ===== -->
+  <div id="game-view-local" class="game-local" style="display:none">
+    <!-- Team 1 Panel -->
+    <div id="local-t1-panel" class="team-panel team-left">
+      <div class="team-header">
+        <div id="local-t1-char" class="team-char-avatar"></div>
+        <span id="local-t1-name">Team 1</span>
+        <span class="team-score-badge" id="local-t1-score">0</span>
+      </div>
+      <div class="question-box" id="local-t1-question">? + ? = ?</div>
+      <input class="answer-display" id="local-t1-input" type="text" readonly placeholder="0" />
+      <div class="keypad">
+        <button onclick="localKeypad(1,'1')">1</button>
+        <button onclick="localKeypad(1,'2')">2</button>
+        <button onclick="localKeypad(1,'3')">3</button>
+        <button onclick="localKeypad(1,'4')">4</button>
+        <button onclick="localKeypad(1,'5')">5</button>
+        <button onclick="localKeypad(1,'6')">6</button>
+        <button onclick="localKeypad(1,'7')">7</button>
+        <button onclick="localKeypad(1,'8')">8</button>
+        <button onclick="localKeypad(1,'9')">9</button>
+        <button class="key-clear" onclick="localKeypad(1,'clear')">✕</button>
+        <button onclick="localKeypad(1,'0')">0</button>
+        <button class="key-submit" onclick="localKeypad(1,'submit')">✓</button>
+      </div>
+    </div>
+
+    <!-- Center Panel -->
+    <div class="center-panel">
+      <div class="center-scores">
+        <span id="local-center-t1">0</span>
+        <div class="center-info">
+          <span id="local-round" class="round-label">Round 1/10</span>
+          <span id="local-timer" class="timer-badge">⏱ 15s</span>
+        </div>
+        <span id="local-center-t2">0</span>
+      </div>
+
+      <!-- Rope area -->
+      <div class="rope-area">
+        <div class="rope-track">
+          <div class="rope-line"></div>
+          <div class="rope-marker" id="rope-marker">🚩</div>
+        </div>
+        <div class="rope-chars">
+          <div class="char-pull-left">🧑</div>
+          <div class="char-pull-right">🧑</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team 2 Panel -->
+    <div id="local-t2-panel" class="team-panel team-right">
+      <div class="team-header">
+        <span class="team-score-badge" id="local-t2-score">0</span>
+        <span id="local-t2-name">Team 2</span>
+        <div id="local-t2-char" class="team-char-avatar"></div>
+      </div>
+      <div class="question-box" id="local-t2-question">? + ? = ?</div>
+      <input class="answer-display" id="local-t2-input" type="text" readonly placeholder="0" />
+      <div class="keypad">
+        <button onclick="localKeypad(2,'1')">1</button>
+        <button onclick="localKeypad(2,'2')">2</button>
+        <button onclick="localKeypad(2,'3')">3</button>
+        <button onclick="localKeypad(2,'4')">4</button>
+        <button onclick="localKeypad(2,'5')">5</button>
+        <button onclick="localKeypad(2,'6')">6</button>
+        <button onclick="localKeypad(2,'7')">7</button>
+        <button onclick="localKeypad(2,'8')">8</button>
+        <button onclick="localKeypad(2,'9')">9</button>
+        <button class="key-clear" onclick="localKeypad(2,'clear')">✕</button>
+        <button onclick="localKeypad(2,'0')">0</button>
+        <button class="key-submit" onclick="localKeypad(2,'submit')">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ONLINE VIEW ===== -->
+  <div id="game-view-online" class="game-online" style="display:none">
+    <!-- Opponent bar -->
+    <div class="online-header">
+      <div class="player-info my-side">
+        <div id="online-my-char" class="online-avatar"></div>
+        <span id="online-my-name">You</span>
+      </div>
+      <div class="score-center">
+        <span id="online-my-score" class="my-score-val">0</span>
+        <span class="score-divider">—</span>
+        <span id="online-opp-score" class="opp-score-val">0</span>
+      </div>
+      <div class="player-info opp-side">
+        <span id="online-opp-name">Opponent</span>
+        <div id="online-opp-char" class="online-avatar"></div>
+      </div>
+    </div>
+
+    <!-- Rope -->
+    <div class="online-rope-area">
+      <div class="rope-track">
+        <div class="rope-line"></div>
+        <div class="rope-marker" id="rope-marker">🚩</div>
+      </div>
+      <div class="rope-chars">
+        <div class="char-pull-left">🧑</div>
+        <div class="char-pull-right">🧑</div>
+      </div>
+    </div>
+
+    <!-- Info row -->
+    <div class="online-info-row">
+      <span id="online-round" class="round-label">Round 1/10</span>
+      <span id="online-timer" class="timer-badge">⏱ 10s</span>
+    </div>
+
+    <!-- Question -->
+    <div class="online-question-area">
+      <div id="online-question" class="question-text">Ready...</div>
+      <div id="online-feedback" class="feedback-text"></div>
+    </div>
+
+    <!-- Answer input display -->
+    <input class="answer-display online-answer" id="online-input" type="text" readonly placeholder="0" />
+
+    <!-- Keypad -->
+    <div class="keypad online-keypad">
+      <button onclick="onlineKeypad('1')">1</button>
+      <button onclick="onlineKeypad('2')">2</button>
+      <button onclick="onlineKeypad('3')">3</button>
+      <button onclick="onlineKeypad('4')">4</button>
+      <button onclick="onlineKeypad('5')">5</button>
+      <button onclick="onlineKeypad('6')">6</button>
+      <button onclick="onlineKeypad('7')">7</button>
+      <button onclick="onlineKeypad('8')">8</button>
+      <button onclick="onlineKeypad('9')">9</button>
+      <button class="key-clear" onclick="onlineKeypad('clear')">✕</button>
+      <button onclick="onlineKeypad('0')">0</button>
+      <button class="key-submit" onclick="onlineKeypad('submit')">✓</button>
+    </div>
+  </div>
+
+</div><!-- /screen-game -->
+
+<!-- ======================== RESULTS ======================== -->
+<div id="screen-results" class="screen">
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+  <div class="results-container">
+    <div class="result-trophy">🏆</div>
+    <h1 id="result-title">YOU WIN!</h1>
+    <div class="result-scores">
+      <div class="result-team">
+        <span id="result-t1-name">Team 1</span>
+        <span id="result-t1-score" class="result-score-val">0</span>
+        <span class="result-score-label">correct</span>
+      </div>
+      <span class="result-vs">VS</span>
+      <div class="result-team">
+        <span id="result-t2-name">Team 2</span>
+        <span id="result-t2-score" class="result-score-val">0</span>
+        <span class="result-score-label">correct</span>
+      </div>
+    </div>
+    <div class="result-btns">
+      <button class="btn btn-primary btn-xl" onclick="playAgain()">🔄 Play Again</button>
+      <button class="btn btn-ghost" onclick="App.showScreen('home'); App.renderHome()">🏠 Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== LEADERBOARD ======================== -->
+<div id="screen-leaderboard" class="screen">
+  <div class="lb-container">
+    <button class="btn-back" onclick="App.showScreen('home')">← Back</button>
+    <h2>🏅 Leaderboard</h2>
+    <p class="sub-text">Nigeria's Top Math Warriors</p>
+    <div id="leaderboard-list" class="lb-list">
+      <p class="loading-text">Loading...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== CHALLENGE MODAL ======================== -->
+<div id="modal-challenge" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-icon">⚔️</div>
+    <p id="challenge-from">Someone wants to battle you!</p>
+    <div class="modal-btns">
+      <button class="btn btn-primary" id="btn-accept-challenge">✅ Accept</button>
+      <button class="btn btn-ghost"   id="btn-decline-challenge">❌ Decline</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== TOAST ======================== -->
+<div id="toast" class="toast"></div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<!-- App scripts -->
+<script src="js/config.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/lobby.js"></script>
+<script src="js/game.js"></script>
+
+<script>
+// ======================== GLOBAL UI HANDLERS ========================
+
+// Auth
+function switchTab(tab) {
+  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) { showToast('Fill in all fields!', 'error'); return; }
+  Auth.login(email, pass, err => { if (err) showToast(err, 'error'); });
+}
+
+async function handleRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-password').value;
+  if (!email || pass.length < 6) { showToast('Email + min 6-char password required!', 'error'); return; }
+  Auth.register(email, pass, err => { if (err) showToast(err, 'error'); });
+}
+
+// Toggle buttons (ops/diff/qtype)
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('op-btn')) {
+    e.target.classList.toggle('active');
+  }
+  if (e.target.classList.contains('diff-btn')) {
+    e.target.closest('.toggle-group').querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+  if (e.target.classList.contains('qtype-btn')) {
+    e.target.closest('.toggle-group').querySelectorAll('.qtype-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+
+// Local setup — small char grids
+let localChar1 = CHARACTERS[0].id;
+let localChar2 = CHARACTERS[1].id;
+
+function openLocalSetup() {
+  App.showScreen('local-setup');
+  renderSmallCharGrid('local-char-grid-1', 1);
+  renderSmallCharGrid('local-char-grid-2', 2);
+}
+
+function renderSmallCharGrid(containerId, team) {
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = '';
+  CHARACTERS.forEach(ch => {
+    const card = document.createElement('div');
+    const isSelected = team === 1 ? ch.id === localChar1 : ch.id === localChar2;
+    card.className = 'char-card-sm' + (isSelected ? ' selected' : '');
+    card.innerHTML = `
+      <div class="char-avatar-sm" style="background-image:url('assets/characters/${ch.file}'); background-position:${ch.bgPos};"></div>
+      <span>${ch.name}</span>
+    `;
+    card.onclick = () => {
+      if (team === 1) localChar1 = ch.id;
+      else            localChar2 = ch.id;
+      grid.querySelectorAll('.char-card-sm').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    };
+    grid.appendChild(card);
+  });
+}
+
+function startLocalFromSetup() {
+  const ops  = [...document.querySelectorAll('#ops-local .op-btn.active')].map(b => b.dataset.op);
+  const diff = document.querySelector('#diff-local .diff-btn.active')?.dataset.diff || 'medium';
+  const qt   = document.querySelector('#qtype-local .qtype-btn.active')?.dataset.type || 'arithmetic';
+  const rnd  = parseInt(document.getElementById('rounds-local').value) || 10;
+  if (!ops.length) { showToast('Select at least one operation!', 'error'); return; }
+  App.showScreen('game');
+  Lobby.startLocalGame({
+    operations: ops, difficulty: diff, questionType: qt, totalRounds: rnd,
+    team1Name: document.getElementById('local-t1-name-input').value || 'Team 1',
+    team2Name: document.getElementById('local-t2-name-input').value || 'Team 2',
+    team1Char: localChar1, team2Char: localChar2
+  });
+}
+
+function copyRoomCode() {
+  const code = document.getElementById('waiting-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Code copied! 📋', 'success'));
+}
+
+function cancelRoom() {
+  App.cleanup();
+  if (App.currentRoomId) {
+    db.ref(`rooms/${App.currentRoomId}/status`).set('cancelled');
+    App.currentRoomId = null;
+  }
+  App.showScreen('home');
+}
+
+function playAgain() {
+  Game.cleanup();
+  if (App.gameMode === 'local') {
+    App.showScreen('local-setup');
+  } else {
+    App.showScreen('mode');
+    App.showScreen('room');
+  }
+}
+
+// Guest also listens to roundTick to advance round
+function setupGuestRoundListener() {
+  if (!App.currentRoomId || App.isHost) return;
+  db.ref(`rooms/${App.currentRoomId}/roundTick`).on('value', snap => {
+    const tick = snap.val();
+    if (tick && tick > Game.currentRound - 1 && !Game.myAnswered) {
+      setTimeout(() => Game.nextRoundOnline(), 1200);
+    }
+  });
+}
+
+// Hook into Game.startOnline to setup guest listener
+const _origStartOnline = Game.startOnline.bind(Game);
+Game.startOnline = function(roomData, myUid) {
+  _origStartOnline(roomData, myUid);
+  if (!App.isHost) setupGuestRoundListener();
+};
+
+// On character select screen, render grid
+document.getElementById('screen-character').addEventListener('animationstart', () => {
+  App.renderCharacterGrid();
+});
+
+// Show character grid when character screen becomes active
+const charObserver = new MutationObserver(() => {
+  if (document.getElementById('screen-character').classList.contains('active')) {
+    App.renderCharacterGrid();
+  }
+});
+charObserver.observe(document.getElementById('screen-character'), { attributes: true });
+
+// ======================== INIT ========================
+App.init();
+</script>
+</body>
+</html>
