@@ -21,13 +21,25 @@ const Auth = {
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       await auth.signInWithPopup(provider);
-      cb(null);
+      if (cb) cb(null);
     } catch (e) {
       if (e.code === 'auth/popup-closed-by-user') {
-        cb(null);
+        if (cb) cb(null);
         return;
       }
-      cb(e.message);
+      // If popup is blocked by browser, simulator, or COOP policy, fall back to redirect
+      if (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request') {
+        try {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: 'select_account' });
+          await auth.signInWithRedirect(provider);
+          return;
+        } catch (redirErr) {
+          if (cb) cb(redirErr.message);
+          return;
+        }
+      }
+      if (cb) cb(e.message);
     }
   },
 
