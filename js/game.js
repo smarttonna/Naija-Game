@@ -78,6 +78,12 @@ const Game = {
     setPuller('left', t1char, settings.team1Name || t1char.name, t1Img);
     setPuller('right', t2char, settings.team2Name || t2char.name, t2Img);
 
+    // Update territory zone tags
+    const z1 = document.querySelector('#pitch-zone-left .zone-tag');
+    const z2 = document.querySelector('#pitch-zone-right .zone-tag');
+    if (z1) z1.textContent = `${(settings.team1Name || t1char.name).toUpperCase()} ZONE`;
+    if (z2) z2.textContent = `${(settings.team2Name || t2char.name).toUpperCase()} ZONE`;
+
     Game.showView('local');
     Game.updateRopeUI();
     Game.nextRoundLocal();
@@ -195,6 +201,12 @@ const Game = {
     }
     setOnlinePuller('left', charMe, myName, myImg);
     setOnlinePuller('right', charOpp, oppName || 'Opponent', oppImg);
+
+    // Update online territory zone tags
+    const oz1 = document.querySelector('#online-pitch-zone-left .zone-tag');
+    const oz2 = document.querySelector('#online-pitch-zone-right .zone-tag');
+    if (oz1) oz1.textContent = `${myName.toUpperCase()} ZONE`;
+    if (oz2) oz2.textContent = `${(oppName || 'OPPONENT').toUpperCase()} ZONE`;
 
     Game.showView('online');
     Game.updateRopeUI();
@@ -345,59 +357,89 @@ const Game = {
   updateRopeUI() {
     // ropePosition ranges from -5 (team1/left wins) to +5 (team2/right wins)
     const pos = Game.ropePosition;
-    // Map -5..+5 to percentage 18%..82% so marker stays within the pullers
-    const pct = 50 + (pos / 5) * 32;
+    // Map -5..+5 to percentage 16%..84% so flag moves deep into winner's zone
+    const pct = 50 + (pos / 5) * 34;
 
     // Update all rope markers (local and online)
     document.querySelectorAll('.rope-marker').forEach(marker => {
       marker.style.left = `${pct}%`;
     });
 
-    // Update Puller positioning & dragging states
+    // Update Puller positioning & dragging states across territory
     const updateTugPair = (leftId, rightId) => {
       const leftEl  = document.getElementById(leftId);
       const rightEl = document.getElementById(rightId);
       if (!leftEl || !rightEl) return;
 
+      const arena = leftEl.closest('.tug-arena');
+      const arenaW = arena ? arena.clientWidth : 320;
+
       leftEl.classList.remove('pulling-hard', 'being-dragged', 'dragged-loss', 'victorious');
       rightEl.classList.remove('pulling-hard', 'being-dragged', 'dragged-loss', 'victorious');
 
-      if (pos < 0) {
-        // Team 1 (Left) is WINNING / PULLING
-        // Right is BEING DRAGGED forward toward center!
-        const dragDist = Math.abs(pos) * 8; // dragged forward up to 40px
-        const pullDist = Math.abs(pos) * 3; // step back up to 15px
+      // The core tug of war mechanic:
+      // The loser is dragged forward across the center line (50%) directly into the winner's territory!
+      // maxDrag = 58% of arena width so the loser crosses well into the other side!
+      const maxDrag = arenaW * 0.58;
+      const maxHeave = arenaW * 0.04;
 
-        leftEl.style.transform = `translateX(-${pullDist}px)`;
+      if (pos < 0) {
+        // Team 1 (Left) is WINNING / DRAGGING Team 2 across the border into Team 1's space!
+        const dragFactor = Math.abs(pos) / 5; // 0.2 to 1.0
+        const dragDist = dragFactor * maxDrag;
+        const heaveDist = dragFactor * maxHeave;
+
+        // Team 1 heaves back into their territory
+        leftEl.style.transform = `translateX(-${heaveDist}px)`;
+        // Team 2 is physically DRAGGED forward across the center line into Team 1's space!
         rightEl.style.transform = `translateX(-${dragDist}px)`;
 
         leftEl.classList.add('pulling-hard');
         rightEl.classList.add('being-dragged');
 
         if (pos <= -5) {
+          // Team 2 dragged completely over the border and collapses in Team 1's space!
           rightEl.classList.add('dragged-loss');
           leftEl.classList.add('victorious');
         }
       } else if (pos > 0) {
-        // Team 2 (Right) is WINNING / PULLING
-        // Left is BEING DRAGGED forward toward center!
-        const dragDist = pos * 8; // dragged forward up to 40px
-        const pullDist = pos * 3; // step back up to 15px
+        // Team 2 (Right) is WINNING / DRAGGING Team 1 across the border into Team 2's space!
+        const dragFactor = pos / 5; // 0.2 to 1.0
+        const dragDist = dragFactor * maxDrag;
+        const heaveDist = dragFactor * maxHeave;
 
+        // Team 1 is physically DRAGGED forward across the center line into Team 2's space!
         leftEl.style.transform = `translateX(${dragDist}px)`;
-        rightEl.style.transform = `translateX(${pullDist}px)`;
+        // Team 2 heaves back into their territory
+        rightEl.style.transform = `translateX(${heaveDist}px)`;
 
         rightEl.classList.add('pulling-hard');
         leftEl.classList.add('being-dragged');
 
         if (pos >= 5) {
+          // Team 1 dragged completely over the border and collapses in Team 2's space!
           leftEl.classList.add('dragged-loss');
           rightEl.classList.add('victorious');
         }
       } else {
-        // Neutral (tied at 0)
+        // Neutral (tied at 0) - both stand in their respective starting zones
         leftEl.style.transform = 'translateX(0px)';
         rightEl.style.transform = 'translateX(0px)';
+      }
+
+      // Also physically shift the rope line slightly with the haul
+      const ropeLine = arena ? arena.querySelector('.tug-rope-line') : null;
+      if (ropeLine) {
+        const ropeShift = (pos / 5) * (arenaW * 0.12);
+        ropeLine.style.transform = `translateX(${ropeShift}px)`;
+      }
+
+      // Territory invasion indicators
+      const zLeft = arena ? arena.querySelector('.zone-left') : null;
+      const zRight = arena ? arena.querySelector('.zone-right') : null;
+      if (zLeft && zRight) {
+        zLeft.style.opacity = pos < 0 ? '1' : (pos > 0 ? '0.45' : '0.75');
+        zRight.style.opacity = pos > 0 ? '1' : (pos < 0 ? '0.45' : '0.75');
       }
     };
 

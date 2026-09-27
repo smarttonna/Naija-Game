@@ -488,48 +488,84 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0;
+  overflow: visible;
 }
 
-.pitch-marker {
-  width: 3px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 2px;
+/* Territory Zones on Ground Pitch */
+.pitch-zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: all 0.3s ease;
 }
-.pitch-marker.mark-left  { margin-left: 15%; border-left: 2px dashed rgba(255, 61, 90, 0.5); }
-.pitch-marker.mark-right { margin-right: 15%; border-right: 2px dashed rgba(33, 150, 243, 0.5); }
+.zone-left {
+  background: linear-gradient(90deg, rgba(0, 200, 83, 0.18) 0%, transparent 100%);
+  border-right: 1px dashed rgba(255, 255, 255, 0.15);
+}
+.zone-right {
+  background: linear-gradient(270deg, rgba(255, 61, 90, 0.18) 0%, transparent 100%);
+  border-left: 1px dashed rgba(255, 255, 255, 0.15);
+}
+.zone-tag {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+}
 
+/* Center Hazard Demarcation Line & Border */
 .pitch-center-pit {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-  width: 48px;
-  height: 36px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.25), transparent 75%);
+  width: 90px;
+  height: 38px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 2;
+  pointer-events: none;
 }
 .pitch-center-pit .pit-line {
   position: absolute;
-  top: 0;
+  top: -125px;
+  bottom: 0;
   width: 3px;
-  height: 100%;
-  background: var(--gold);
-  box-shadow: 0 0 8px var(--gold-glow);
+  background: repeating-linear-gradient(
+    180deg,
+    var(--gold),
+    var(--gold) 8px,
+    #000 8px,
+    #000 16px
+  );
+  box-shadow: 0 0 10px var(--gold-glow);
+  opacity: 0.7;
 }
 .pitch-center-pit .pit-hazard {
   position: relative;
   z-index: 1;
-  font-size: 0.85rem;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--gold);
+  background: rgba(15, 25, 41, 0.95);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--gold);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
   animation: pulse-glow 1.5s ease-in-out infinite;
 }
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 6px var(--gold)); }
+  0%, 100% { opacity: 0.7; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 6px var(--gold)); }
 }
 
 /* The Realistic Rope Track */
@@ -628,12 +664,12 @@ body {
   flex-direction: column;
   align-items: center;
   z-index: 3;
-  transition: transform 0.45s cubic-bezier(0.34, 1.25, 0.64, 1);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   --puller-color: var(--green);
 }
 
 .left-puller {
-  left: 4px;
+  left: 2%;
 }
 .left-puller .puller-char-wrap {
   transform: scaleX(-1);

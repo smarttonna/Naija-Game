@@ -9,7 +9,7 @@
   <link rel="alternate icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=1.0.7" />
+  <link rel="stylesheet" href="css/style.css?v=1.0.8" />
 </head>
 <body>
 
@@ -396,12 +396,16 @@
       <div class="tug-arena" id="local-tug-arena">
         <!-- Pitch ground with hazard center pit -->
         <div class="tug-pitch">
-          <div class="pitch-marker mark-left"></div>
+          <div class="pitch-zone zone-left" id="pitch-zone-left">
+            <span class="zone-tag">TEAM 1 TERRITORY</span>
+          </div>
           <div class="pitch-center-pit">
             <span class="pit-line"></span>
-            <span class="pit-hazard">⚡</span>
+            <span class="pit-hazard">⚡ BORDER ⚡</span>
           </div>
-          <div class="pitch-marker mark-right"></div>
+          <div class="pitch-zone zone-right" id="pitch-zone-right">
+            <span class="zone-tag">TEAM 2 TERRITORY</span>
+          </div>
         </div>
 
         <!-- The Rope and Flag Track -->
@@ -496,12 +500,16 @@
     <div class="tug-arena online-tug-arena" id="online-tug-arena">
       <!-- Pitch ground with hazard center pit -->
       <div class="tug-pitch">
-        <div class="pitch-marker mark-left"></div>
+        <div class="pitch-zone zone-left" id="online-pitch-zone-left">
+          <span class="zone-tag">YOUR TERRITORY</span>
+        </div>
         <div class="pitch-center-pit">
           <span class="pit-line"></span>
-          <span class="pit-hazard">⚡</span>
+          <span class="pit-hazard">⚡ BORDER ⚡</span>
         </div>
-        <div class="pitch-marker mark-right"></div>
+        <div class="pitch-zone zone-right" id="online-pitch-zone-right">
+          <span class="zone-tag">OPPONENT TERRITORY</span>
+        </div>
       </div>
 
       <!-- The Rope and Flag Track -->
@@ -640,12 +648,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <!-- App scripts -->
-<script src="js/config.js?v=1.0.7"></script>
-<script src="js/questions.js?v=1.0.7"></script>
-<script src="js/app.js?v=1.0.7"></script>
-<script src="js/auth.js?v=1.0.7"></script>
-<script src="js/lobby.js?v=1.0.7"></script>
-<script src="js/game.js?v=1.0.7"></script>
+<script src="js/config.js?v=1.0.8"></script>
+<script src="js/questions.js?v=1.0.8"></script>
+<script src="js/app.js?v=1.0.8"></script>
+<script src="js/auth.js?v=1.0.8"></script>
+<script src="js/lobby.js?v=1.0.8"></script>
+<script src="js/game.js?v=1.0.8"></script>
 
 <script>
 // ======================== GLOBAL UI HANDLERS ========================
