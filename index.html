@@ -9,7 +9,7 @@
   <link rel="alternate icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=1.0.8" />
+  <link rel="stylesheet" href="css/style.css?v=1.0.9" />
 </head>
 <body>
 
@@ -24,10 +24,13 @@
         <p class="game-tagline">Who sabi math pass? Prove am! ⚡</p>
         <div class="splash-btns">
           <button class="btn btn-primary btn-xl" id="btn-splash-play" onclick="App.showScreen('auth')">
-            🎮 Start Playing
+            🎮 Login / Register
+          </button>
+          <button class="btn btn-guest btn-xl" id="btn-splash-guest" onclick="App.playAsGuest()">
+            🎭 Play as Guest (No Sign Up)
           </button>
           <button class="btn btn-ghost btn-xl" onclick="App.showScreen('auth'); setTimeout(()=>document.getElementById('tab-register').click(), 100)">
-            ✨ Create Account
+            ✨ Create Free Account
           </button>
         </div>
       </div>
@@ -42,6 +45,25 @@
       <span class="flag">🇳🇬</span>
       <h2>Naija Math Battle</h2>
     </div>
+
+    <!-- Play as Guest Option -->
+    <div class="guest-auth-callout">
+      <div class="guest-callout-content">
+        <span class="guest-callout-icon">⚡</span>
+        <div>
+          <h4>Just want to play right now?</h4>
+          <p>Battle friends instantly without creating an account. (Wins are not registered)</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-gold btn-full" id="btn-auth-guest" onclick="App.playAsGuest()">
+        🎭 Play as Guest
+      </button>
+    </div>
+
+    <div class="auth-divider">
+      <span>or sign in with account</span>
+    </div>
+
     <!-- Google Sign-In -->
     <button type="button" class="btn btn-google btn-full" id="btn-google-signin" onclick="handleGoogleSignIn()">
       <svg class="google-icon" viewBox="0 0 24 24">
@@ -117,22 +139,35 @@
       <div class="home-user" onclick="App.showScreen('character'); App.renderCharacterGrid()">
         <div id="home-char-img" class="mini-char"></div>
         <span id="home-char-name">Tunde</span>
+        <span id="home-guest-badge" class="badge-guest" style="display:none;">Guest</span>
       </div>
     </header>
+
+    <!-- Guest Mode Banner -->
+    <div id="home-guest-banner" class="guest-banner" style="display:none;">
+      <div class="guest-banner-info">
+        <span class="guest-banner-icon">🎭</span>
+        <div class="guest-banner-text">
+          <strong>Playing in Guest Mode</strong>
+          <p>Challenge friends locally or online! (Wins and rating are not saved to the official leaderboard)</p>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-gold" onclick="promptRegisterFromGuest()">✨ Register to Save Wins</button>
+    </div>
 
     <!-- Stats bar -->
     <div class="stats-bar">
       <div class="stat-pill">
         <span class="stat-icon">🏆</span>
-        <div><strong id="home-wins">0</strong><small>Wins</small></div>
+        <div><strong id="home-wins">0</strong><small id="home-wins-label">Wins</small></div>
       </div>
       <div class="stat-pill">
         <span class="stat-icon">⭐</span>
-        <div><strong id="home-rating">1000</strong><small>Rating</small></div>
+        <div><strong id="home-rating">1000</strong><small id="home-rating-label">Rating</small></div>
       </div>
       <div class="stat-pill">
         <span class="stat-icon">💔</span>
-        <div><strong id="home-losses">0</strong><small>Losses</small></div>
+        <div><strong id="home-losses">0</strong><small id="home-losses-label">Losses</small></div>
       </div>
     </div>
 
@@ -177,7 +212,7 @@
       </div>
     </div>
 
-    <button class="btn btn-ghost btn-sm logout-btn" onclick="Auth.logout()">🚪 Logout</button>
+    <button class="btn btn-ghost btn-sm logout-btn" id="btn-logout" onclick="handleLogoutClick()">🚪 Logout</button>
   </div>
 </div>
 
@@ -607,6 +642,19 @@
         <span class="result-score-label">correct</span>
       </div>
     </div>
+    <!-- Guest Conversion Box -->
+    <div id="result-guest-cta" class="result-guest-cta" style="display:none;">
+      <span class="guest-cta-badge">🎭 Guest Battle Complete</span>
+      <h3 class="guest-cta-title">Loved the battle? Settle it for real! 🔥</h3>
+      <p class="guest-cta-desc">
+        Since you played in <strong>Guest Mode</strong>, this win was <strong>not registered</strong> on the official Naija Leaderboard.
+        Create a free account in 10 seconds to start saving your wins and rank among Nigeria's best!
+      </p>
+      <button class="btn btn-gold btn-full" onclick="promptRegisterFromGuest()">
+        ✨ Register & Save Future Wins
+      </button>
+    </div>
+
     <div class="result-btns">
       <button class="btn btn-primary btn-xl" onclick="playAgain()">🔄 Play Again</button>
       <button class="btn btn-ghost" onclick="App.showScreen('home'); App.renderHome()">🏠 Home</button>
@@ -620,6 +668,10 @@
     <button class="btn-back" onclick="App.showScreen('home')">← Back</button>
     <h2>🏅 Leaderboard</h2>
     <p class="sub-text">Nigeria's Top Math Warriors</p>
+    <div id="lb-guest-notice" class="lb-guest-notice" style="display:none;">
+      <span>🎭 <strong>Guest Notice:</strong> In Guest Mode, your wins are not saved to the leaderboard.</span>
+      <button class="btn btn-sm btn-gold" onclick="promptRegisterFromGuest()">Register Now</button>
+    </div>
     <div id="leaderboard-list" class="lb-list">
       <p class="loading-text">Loading...</p>
     </div>
@@ -648,12 +700,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <!-- App scripts -->
-<script src="js/config.js?v=1.0.8"></script>
-<script src="js/questions.js?v=1.0.8"></script>
-<script src="js/app.js?v=1.0.8"></script>
-<script src="js/auth.js?v=1.0.8"></script>
-<script src="js/lobby.js?v=1.0.8"></script>
-<script src="js/game.js?v=1.0.8"></script>
+<script src="js/config.js?v=1.0.9"></script>
+<script src="js/questions.js?v=1.0.9"></script>
+<script src="js/app.js?v=1.0.9"></script>
+<script src="js/auth.js?v=1.0.9"></script>
+<script src="js/lobby.js?v=1.0.9"></script>
+<script src="js/game.js?v=1.0.9"></script>
 
 <script>
 // ======================== GLOBAL UI HANDLERS ========================
@@ -788,6 +840,22 @@ Game.startOnline = function(roomData, myUid) {
   _origStartOnline(roomData, myUid);
   if (!App.isHost) setupGuestRoundListener();
 };
+
+function handleLogoutClick() {
+  if (App.isGuest) {
+    App.exitGuestMode();
+  } else {
+    Auth.logout();
+  }
+}
+
+function promptRegisterFromGuest() {
+  App.showScreen('auth');
+  switchTab('register');
+  const regEmail = document.getElementById('reg-email');
+  if (regEmail) regEmail.focus();
+  showToast('Create your account to start recording your wins! 🏆', 'info');
+}
 
 // On character select screen, render grid
 document.getElementById('screen-character').addEventListener('animationstart', () => {

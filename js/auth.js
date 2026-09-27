@@ -4,6 +4,11 @@
 const Auth = {
   async register(email, password, cb) {
     try {
+      if (auth.currentUser && auth.currentUser.isAnonymous) {
+        await auth.signOut();
+      }
+      App.isGuest = false;
+      sessionStorage.removeItem('nmb_guest');
       await auth.createUserWithEmailAndPassword(email, password);
       cb(null);
     } catch (e) { cb(e.message); }
@@ -11,6 +16,11 @@ const Auth = {
 
   async login(email, password, cb) {
     try {
+      if (auth.currentUser && auth.currentUser.isAnonymous) {
+        await auth.signOut();
+      }
+      App.isGuest = false;
+      sessionStorage.removeItem('nmb_guest');
       await auth.signInWithEmailAndPassword(email, password);
       cb(null);
     } catch (e) { cb(e.message); }
@@ -18,6 +28,11 @@ const Auth = {
 
   async loginWithGoogle(cb) {
     try {
+      if (auth.currentUser && auth.currentUser.isAnonymous) {
+        await auth.signOut();
+      }
+      App.isGuest = false;
+      sessionStorage.removeItem('nmb_guest');
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       await auth.signInWithPopup(provider);
@@ -43,10 +58,29 @@ const Auth = {
     }
   },
 
+  async signInGuest() {
+    try {
+      if (auth.signInAnonymously) {
+        const cred = await auth.signInAnonymously();
+        return cred.user;
+      }
+    } catch (e) {
+      console.info('Firebase anonymous auth not enabled or restricted; continuing with local guest session:', e.message);
+    }
+    return null;
+  },
+
   async logout() {
     App.cleanup();
     if (App.challengeListener) { App.challengeListener(); App.challengeListener = null; }
-    await auth.signOut();
+    sessionStorage.removeItem('nmb_guest');
+    App.isGuest = false;
+    App.user = null;
+    App.profile = null;
+    if (auth.currentUser) {
+      try { await auth.signOut(); } catch (e) {}
+    }
+    App.showScreen('auth');
   },
 
   async loadProfile(uid) {
@@ -84,6 +118,11 @@ const Auth = {
   },
 
   async updateStats(uid, won) {
+    // DO NOT register stats or wins if user is in guest mode or anonymous
+    if (App.isGuest || !uid || String(uid).startsWith('guest_') || (auth.currentUser && auth.currentUser.isAnonymous)) {
+      console.info('Guest mode: win/loss is not registered to leaderboard or profile.');
+      return;
+    }
     const ref  = db.ref(`users/${uid}`);
     const snap = await ref.get();
     const p    = snap.val() || {};

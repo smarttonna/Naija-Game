@@ -16,6 +16,7 @@ const CHARACTERS = [
 const App = {
   user: null,
   profile: null,
+  isGuest: false,
   selectedChar: null,
   gameMode: null,       // 'local' | 'online'
   currentRoomId: null,
@@ -24,8 +25,29 @@ const App = {
   challengeListener: null,
 
   async init() {
+    // Check if user was previously in guest mode during this browser session
+    const savedGuest = sessionStorage.getItem('nmb_guest');
+    if (savedGuest) {
+      try {
+        const parsed = JSON.parse(savedGuest);
+        App.isGuest = true;
+        App.profile = parsed;
+        App.selectedChar = CHARACTERS.find(c => c.id === parsed.character) || CHARACTERS[0];
+        if (!App.user) {
+          App.user = { uid: parsed.uid || `guest_${Date.now()}`, isAnonymous: true };
+        }
+        App.showScreen('home');
+        App.renderHome();
+        return;
+      } catch (e) {
+        sessionStorage.removeItem('nmb_guest');
+      }
+    }
+
     auth.onAuthStateChanged(async (user) => {
-      if (user) {
+      if (user && !user.isAnonymous) {
+        App.isGuest = false;
+        sessionStorage.removeItem('nmb_guest');
         App.user = user;
         App.profile = await Auth.loadProfile(user.uid);
         if (!App.profile) {
@@ -42,12 +64,49 @@ const App = {
           App.renderHome();
           App.listenForChallenges();
         }
-      } else {
+      } else if (!App.isGuest) {
         App.user = null;
         App.profile = null;
         App.showScreen('auth');
       }
     });
+  },
+
+  async playAsGuest() {
+    App.isGuest = true;
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const randomChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+
+    let user = await Auth.signInGuest();
+    if (!user) {
+      user = {
+        uid: `guest_${Date.now()}_${randomNum}`,
+        isAnonymous: true,
+        displayName: `Guest ${randomNum}`
+      };
+    }
+    App.user = user;
+
+    App.profile = {
+      uid: user.uid,
+      username: `Guest_${randomNum}`,
+      character: randomChar.id,
+      wins: 0,
+      losses: 0,
+      rating: 1000,
+      isGuest: true
+    };
+    App.selectedChar = randomChar;
+    sessionStorage.setItem('nmb_guest', JSON.stringify(App.profile));
+
+    App.showScreen('home');
+    App.renderHome();
+    showToast(`Welcome! Playing as ${App.profile.username} (Guest Mode 🎭)`, 'info');
+  },
+
+  exitGuestMode() {
+    Auth.logout();
+    showToast('Exited Guest Mode. Sign in or register anytime!', 'info');
   },
 
   showScreen(name) {
@@ -62,10 +121,35 @@ const App = {
   renderHome() {
     const p = App.profile;
     if (!p) return;
-    document.getElementById('home-username').textContent = p.username;
-    document.getElementById('home-wins').textContent    = p.wins    || 0;
-    document.getElementById('home-losses').textContent  = p.losses  || 0;
-    document.getElementById('home-rating').textContent  = p.rating  || 1000;
+
+    const guestBanner = document.getElementById('home-guest-banner');
+    const guestBadge  = document.getElementById('home-guest-badge');
+    const winsLabel   = document.getElementById('home-wins-label');
+    const ratingLabel = document.getElementById('home-rating-label');
+    const logoutBtn   = document.getElementById('btn-logout');
+
+    if (App.isGuest) {
+      if (guestBanner) guestBanner.style.display = 'flex';
+      if (guestBadge)  guestBadge.style.display  = 'inline-flex';
+      if (winsLabel)   winsLabel.textContent     = 'Wins (Guest)';
+      if (ratingLabel) ratingLabel.textContent   = 'Rating (Guest)';
+      if (logoutBtn)   logoutBtn.innerHTML       = '🚪 Exit Guest Mode';
+      document.getElementById('home-username').textContent = p.username;
+      document.getElementById('home-wins').textContent    = '0';
+      document.getElementById('home-losses').textContent  = '0';
+      document.getElementById('home-rating').textContent  = 'Unranked';
+    } else {
+      if (guestBanner) guestBanner.style.display = 'none';
+      if (guestBadge)  guestBadge.style.display  = 'none';
+      if (winsLabel)   winsLabel.textContent     = 'Wins';
+      if (ratingLabel) ratingLabel.textContent   = 'Rating';
+      if (logoutBtn)   logoutBtn.innerHTML       = '🚪 Logout';
+      document.getElementById('home-username').textContent = p.username;
+      document.getElementById('home-wins').textContent    = p.wins    || 0;
+      document.getElementById('home-losses').textContent  = p.losses  || 0;
+      document.getElementById('home-rating').textContent  = p.rating  || 1000;
+    }
+
     const char = CHARACTERS.find(c => c.id === p.character) || CHARACTERS[0];
     document.getElementById('home-char-img').style.backgroundImage  = `url('assets/characters/${char.file}')`;
     document.getElementById('home-char-img').style.backgroundPosition = char.bgPos;
@@ -103,7 +187,19 @@ const App = {
       showToast('Choose a character first!', 'error');
       return;
     }
-    // Check username availability
+
+    if (App.isGuest) {
+      // Guest mode customization: save locally, do not record in database
+      App.profile.username = username;
+      App.profile.character = App.selectedChar.id;
+      sessionStorage.setItem('nmb_guest', JSON.stringify(App.profile));
+      App.showScreen('home');
+      App.renderHome();
+      showToast(`Guest tag set to ${username}! 🎭 (Wins not registered)`, 'success');
+      return;
+    }
+
+    // Check username availability for registered users
     const taken = await Auth.isUsernameTaken(username);
     if (taken) { showToast('Username already taken. Try another!', 'error'); return; }
 
@@ -174,6 +270,10 @@ function showChallengeInvite(challengeKey, data) {
 // ===================== LEADERBOARD =====================
 async function loadLeaderboard() {
   const list = document.getElementById('leaderboard-list');
+  const notice = document.getElementById('lb-guest-notice');
+  if (notice) {
+    notice.style.display = App.isGuest ? 'flex' : 'none';
+  }
   list.innerHTML = '<p class="loading-text">Loading...</p>';
   try {
     const snap = await firestore.collection('leaderboard')

@@ -20,6 +20,7 @@ const Lobby = {
 
   // ====== ONLINE — Create Room ======
   async createRoom() {
+    if (!App.user) { await App.playAsGuest(); }
     const roomId = Lobby.generateCode();
     App.currentRoomId = roomId;
     App.isHost        = true;
@@ -28,9 +29,11 @@ const Lobby = {
       hostId:        App.user.uid,
       hostUsername:  App.profile.username,
       hostCharacter: App.profile.character,
+      hostIsGuest:   !!App.isGuest,
       guestId:       null,
       guestUsername: null,
       guestCharacter: null,
+      guestIsGuest:  false,
       status:        'waiting',
       settings:      null,
       seed:          Math.floor(Math.random() * 9999999),
@@ -66,6 +69,7 @@ const Lobby = {
 
   // ====== ONLINE — Join by Room Code ======
   async joinRoom(roomId, showScreen = true) {
+    if (!App.user) { await App.playAsGuest(); }
     App.currentRoomId = roomId;
     App.isHost        = false;
     App.gameMode      = 'online';
@@ -79,9 +83,10 @@ const Lobby = {
     if (room.hostId === App.user.uid) { showToast("You can't join your own room!", 'error'); return; }
 
     await db.ref(`rooms/${roomId}`).update({
-      guestId:       App.user.uid,
-      guestUsername: App.profile.username,
-      guestCharacter: App.profile.character
+      guestId:        App.user.uid,
+      guestUsername:  App.profile.username,
+      guestCharacter: App.profile.character,
+      guestIsGuest:   !!App.isGuest
     });
 
     // Show waiting screen (guest waits for host to configure)

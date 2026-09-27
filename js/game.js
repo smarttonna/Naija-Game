@@ -240,8 +240,12 @@ const Game = {
       const label = room.winner === 'draw' ? "It's a DRAW! 🤝" : myWin ? 'YOU WIN! 🏆' : 'You Lost 😢';
       Game.showResults(label, room.team1Score, room.team2Score,
         room.hostUsername, room.guestUsername);
-      // Update stats
-      if (App.user) Auth.updateStats(App.user.uid, myWin && room.winner !== 'draw');
+      // Update stats only for registered users (guests are not registered)
+      if (App.user && !App.isGuest && !App.user.isAnonymous && !String(App.user.uid).startsWith('guest_')) {
+        Auth.updateStats(App.user.uid, myWin && room.winner !== 'draw');
+      } else {
+        console.info('Guest match ended: wins are not recorded.');
+      }
     }
   },
 
@@ -509,6 +513,13 @@ const Game = {
     document.getElementById('result-t2-score').textContent = t2Score;
     document.getElementById('result-t1-name').textContent  = t1Name  || 'Team 1';
     document.getElementById('result-t2-name').textContent  = t2Name  || 'Team 2';
+
+    // Show conversion CTA if user is in guest mode
+    const guestCta = document.getElementById('result-guest-cta');
+    if (guestCta) {
+      guestCta.style.display = App.isGuest ? 'block' : 'none';
+    }
+
     Game.launchConfetti();
   },
 
