@@ -58,12 +58,16 @@ const Auth = {
     await db.ref(`users/${uid}`).set(profile);
     // Also save to username index for search
     await db.ref(`usernames/${username}`).set(uid);
-    // Firestore leaderboard entry
-    await firestore.collection('leaderboard').doc(uid).set({
-      username: profile.username,
-      character: profile.character,
-      wins: 0, losses: 0, rating: 1000
-    });
+    // Firestore leaderboard entry (safeguarded against adblocker ERR_BLOCKED_BY_CLIENT)
+    try {
+      await firestore.collection('leaderboard').doc(uid).set({
+        username: profile.username,
+        character: profile.character,
+        wins: 0, losses: 0, rating: 1000
+      });
+    } catch (e) {
+      console.warn('Leaderboard sync skipped (Firestore blocked by adblocker or unavailable):', e);
+    }
   },
 
   async isUsernameTaken(username) {
@@ -88,6 +92,10 @@ const Auth = {
     const ratingDelta = won ? 25 : -15;
     const rating = Math.max(0, (p.rating || 1000) + ratingDelta);
     await ref.update({ wins, losses, rating });
-    await firestore.collection('leaderboard').doc(uid).update({ wins, losses, rating });
+    try {
+      await firestore.collection('leaderboard').doc(uid).update({ wins, losses, rating });
+    } catch (e) {
+      console.warn('Leaderboard stat sync skipped:', e);
+    }
   }
 };
